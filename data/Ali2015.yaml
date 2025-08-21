@@ -1,0 +1,18 @@
+metadata:
+    telescope: PAPER
+    telescope_suffix: 64
+    author: Parsons
+    year: 2014
+    doi: 10.1088/0004-637X/809/1/61
+
+notes:
+    - The k value has been calculated assuming linear binning from the k_lower and k_upper values provided in the paper.
+
+data:
+    delta_squared: [22.4**2]
+    k: [0.325]
+    k_lower: [0.15]
+    k_upper: [0.50]
+    z: [8.4]
+    z_lower: []
+    z_upper: []

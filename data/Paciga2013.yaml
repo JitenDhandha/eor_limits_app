@@ -1,0 +1,18 @@
+metadata:
+    telescope: GMRT
+    telescope_suffix: ''
+    author: Paciga
+    year: 2013
+    doi: 10.1093/mnras/stt753
+
+notes:
+    - The k_lower and k_upper values are taken by eye from the plots in the paper. Not authoritative.
+
+data:
+    delta_squared: [6.15e4]
+    k: [0.5]
+    k_lower: [0.495]
+    k_upper: [0.505]
+    z: [8.6]
+    z_lower: []
+    z_upper: []
