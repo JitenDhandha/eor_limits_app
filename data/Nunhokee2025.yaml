@@ -1,0 +1,21 @@
+metadata:
+    telescope: MWA
+    telescope_suffix:
+    author: Nunhokee
+    year: 2025
+    doi: DoiLink
+
+data:
+    delta_squared:
+        [[30.2**2],
+         [31.3**2],
+         [39.1**2]]
+    k:
+        [[0.177],
+         [0.177],
+         [0.212]]
+    k_lower: []
+    k_upper: []
+    z: [6.5, 6.8, 7.0]
+    z_lower: []
+    z_upper: []

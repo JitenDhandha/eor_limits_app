@@ -1,0 +1,15 @@
+metadata:
+    telescope: TelescopeName
+    telescope_suffix: Phase I
+    author: AuthorName
+    year: 2025
+    doi: DoiLink
+
+data:
+    delta_squared: []
+    k: []
+    k_lower: []
+    k_upper: []
+    z: [10]
+    z_lower: []
+    z_upper: []
