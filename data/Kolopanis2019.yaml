@@ -1,6 +1,6 @@
 metadata:
     telescope: PAPER
-    telescope_suffix: 64
+    telescope_suffix: '64'
     author: Kolopanis
     year: 2019
     doi: 10.3847/1538-4357/ab3e3a
