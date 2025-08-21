@@ -60,15 +60,14 @@ class Data:
         converter=to_eval_and_float_array,
     )
 
-    """
     def __attrs_post_init__(self):
         # If z has more than one element, delta_squared and k must be 2D
         if self.z.size > 1:
-            if (self.k.ndim != 2) or (self.k_lower.ndim != 2) or (self.k_upper.ndim != 2) or (self.delta_squared.ndim != 2):
+            if not (isinstance(self.k[0], list) and isinstance(self.k_lower[0], list) and isinstance(self.k_upper[0], list) and isinstance(self.delta_squared[0], list)):
                 raise ValueError("k, k_lower, k_upper, delta_squared must be 2D if z has more than one element!")
         # If z has only one element, delta_squared and k must be 1D
         elif self.z.size == 1:
-            if (self.k.ndim != 1) or (self.k_lower.ndim != 1) or (self.k_upper.ndim != 1) or (self.delta_squared.ndim != 1):
+            if (isinstance(self.k[0], list) and isinstance(self.k_lower[0], list) and isinstance(self.k_upper[0], list) and isinstance(self.delta_squared[0], list)):
                 raise ValueError("k, k_lower, k_upper, delta_squared must be 1D if z has only one element!")
         elif self.z.size == 0:
             pass  # Allow empty arrays
@@ -78,7 +77,6 @@ class Data:
         # Check that k_lower and k_upper have the same shape as k
         if (self.k_lower.size > 0 and self.k_lower.shape != self.k.shape) or (self.k_upper.size > 0 and self.k_upper.shape != self.k.shape):
             raise ValueError("k_lower and k_upper must have the same shape as k.")
-    """
 
 @attr.define
 class MetaData:

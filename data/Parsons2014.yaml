@@ -1,6 +1,6 @@
 metadata:
     telescope: PAPER
-    telescope_suffix: 32
+    telescope_suffix: '32'
     author: Parsons
     year: 2014
     doi: 10.1088/0004-637X/788/2/106 
