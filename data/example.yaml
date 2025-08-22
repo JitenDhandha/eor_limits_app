@@ -8,8 +8,8 @@ metadata:
 data:
     delta_squared: []
     k: []
-    k_lower: []
-    k_upper: []
+    k_lower: 
+    k_upper: 
     z: [10]
-    z_lower: []
-    z_upper: []
+    z_lower: 
+    z_upper: 
