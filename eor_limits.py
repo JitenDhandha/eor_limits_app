@@ -38,7 +38,7 @@ def to_eval_and_obj_array(arr):
 
     # Process the list recursively (handles nested lists)
     def process_list(lst):
-        if isinstance(lst, list):
+        if isinstance(lst, (list, np.ndarray)):
             return [process_list(x) for x in lst]
         else:
             return eval_item(lst)
@@ -137,25 +137,40 @@ def get_dataset(file_path: str) -> DataSet:
         data=Data(**yaml_data.get('data', {})),
     )
     
-"""
-def load_dataset_lowest_limits(filepath: str) -> DataSet:
+# WARNING: This might be over-estimating the lowest limit, if the lowest k-bin is erroneously low.
+def get_dataset_lowest_limits(filepath: str) -> DataSet:
     
-    dataset = load_dataset(filepath)
+    dataset = get_dataset(filepath)
+    dsq_L = []
+    k_L = []
+    k_lower_L = []
+    k_upper_L = []
     for iz in range(len(dataset.data.z)):
         delta_squared_z = np.array(dataset.data.delta_squared[iz], dtype=float)
         min_index = np.nanargmin(delta_squared_z)
         # Remove all but the minimum value in this z slice
-        dataset.data.delta_squared[iz] = np.array([delta_squared_z[min_index]], dtype=object)
-        dataset.data.k[iz] = np.array([dataset.data.k[iz][min_index]], dtype=object)
+        dsq_L.append([delta_squared_z[min_index]])
+        k_L.append([dataset.data.k[iz][min_index]])
         if dataset.data.k_lower.size > 0:
-            dataset.data.k_lower[iz] = np.array([dataset.data.k_lower[iz][min_index]], dtype=object)
+            k_lower_L.append([dataset.data.k_lower[iz][min_index]])
         else:
-            dataset.data.k_lower[iz] = np.array([], dtype=object)
+            pass
         if dataset.data.k_upper.size > 0:
-            dataset.data.k_upper[iz] = np.array([dataset.data.k_upper[iz][min_index]], dtype=object)
+            k_upper_L.append([dataset.data.k_upper[iz][min_index]])
         else:
-            dataset.data.k_upper[iz] = np.array([], dtype=object)
-    return dataset
-"""
+            pass
+    return  DataSet(
+        metadata=dataset.metadata,
+        notes=dataset.notes,
+        data=Data(
+            z=dataset.data.z,
+            z_lower=dataset.data.z_lower,
+            z_upper=dataset.data.z_upper,
+            k=k_L,
+            k_lower=k_lower_L,
+            k_upper=k_upper_L,
+            delta_squared=dsq_L,
+        )
+    )
         
     
