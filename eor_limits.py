@@ -1,9 +1,7 @@
 import attr
-from attr import validators
 import numpy as np
 import yaml
-import ast
-
+import os
 
 ##################################################################
 #####                  Validator functions                   #####
@@ -101,27 +99,32 @@ class Data:
 
 @attr.define
 class MetaData:
-    telescope: str = attr.field(validator=validators.instance_of(str), default='')
-    telescope_suffix: str = attr.field(validator=validators.instance_of(str), default='')
-    author: str = attr.field(validator=validators.instance_of(str), default='')
-    year: int = attr.field(validator=validators.instance_of(int), default=0)
-    doi: str = attr.field(validator=validators.instance_of(str), default='')
+    telescope: str = attr.field(validator=attr.validators.instance_of(str), default='')
+    telescope_suffix: str = attr.field(validator=attr.validators.instance_of(str), default='')
+    author: str = attr.field(validator=attr.validators.instance_of(str), default='')
+    year: int = attr.field(validator=attr.validators.instance_of(int), default=0)
+    doi: str = attr.field(validator=attr.validators.instance_of(str), default='')
 
 ##################################################################
 #####                     Dataset class                      #####
 ##################################################################
+
 @attr.define
 class DataSet:
-    metadata: MetaData = attr.field(validator=validators.instance_of(MetaData))
-    notes: str = attr.field(validator=validators.instance_of(list))
-    data: Data = attr.field(validator=validators.instance_of(Data))
-    
+    metadata: MetaData = attr.field(validator=attr.validators.instance_of(MetaData))
+    notes: str = attr.field(validator=attr.validators.instance_of(list))
+    data: Data = attr.field(validator=attr.validators.instance_of(Data))
     
 ##################################################################
 #####                    Loader function                     #####
 ##################################################################
 
-def load_dataset(file_path: str) -> DataSet:
+def get_all_dataset_names() -> list[str]:
+    
+    files = [f[:-5] for f in os.listdir('data') if f.endswith('.yaml')]
+    return files
+
+def get_dataset(file_path: str) -> DataSet:
     
     file_path = 'data/' + file_path
     file_path = file_path + '.yaml' if not file_path.endswith('.yaml') else file_path
@@ -133,3 +136,26 @@ def load_dataset(file_path: str) -> DataSet:
         notes=yaml_data.get('notes', []),
         data=Data(**yaml_data.get('data', {})),
     )
+    
+"""
+def load_dataset_lowest_limits(filepath: str) -> DataSet:
+    
+    dataset = load_dataset(filepath)
+    for iz in range(len(dataset.data.z)):
+        delta_squared_z = np.array(dataset.data.delta_squared[iz], dtype=float)
+        min_index = np.nanargmin(delta_squared_z)
+        # Remove all but the minimum value in this z slice
+        dataset.data.delta_squared[iz] = np.array([delta_squared_z[min_index]], dtype=object)
+        dataset.data.k[iz] = np.array([dataset.data.k[iz][min_index]], dtype=object)
+        if dataset.data.k_lower.size > 0:
+            dataset.data.k_lower[iz] = np.array([dataset.data.k_lower[iz][min_index]], dtype=object)
+        else:
+            dataset.data.k_lower[iz] = np.array([], dtype=object)
+        if dataset.data.k_upper.size > 0:
+            dataset.data.k_upper[iz] = np.array([dataset.data.k_upper[iz][min_index]], dtype=object)
+        else:
+            dataset.data.k_upper[iz] = np.array([], dtype=object)
+    return dataset
+"""
+        
+    
