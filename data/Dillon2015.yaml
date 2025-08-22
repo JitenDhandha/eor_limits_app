@@ -26,5 +26,5 @@ data:
         [.22], 
         [.17]]
     z: [6.4, 6.8, 7.25]
-    z_lower: []
-    z_upper: []
+    z_lower: 
+    z_upper: 

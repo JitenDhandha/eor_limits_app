@@ -9,10 +9,10 @@ notes:
     - The k value has been calculated assuming linear binning from the k_lower and k_upper values provided in the paper.
 
 data:
-    delta_squared: [22.4**2]
-    k: [0.325]
-    k_lower: [0.15]
-    k_upper: [0.50]
+    delta_squared: [[22.4**2]]
+    k: [[0.325]]
+    k_lower: [[0.15]]
+    k_upper: [[0.50]]
     z: [8.4]
-    z_lower: []
-    z_upper: []
+    z_lower: 
+    z_upper: 

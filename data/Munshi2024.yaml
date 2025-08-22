@@ -6,10 +6,10 @@ metadata:
     doi: 10.1051/0004-6361/202348329 
 
 data:
-    delta_squared: [2.4e7]
-    k: [0.041]
-    k_lower: []
-    k_upper: []
+    delta_squared: [[2.4e7]]
+    k: [[0.041]]
+    k_lower: 
+    k_upper: 
     z: [20.3]
-    z_lower: []
-    z_upper: []
+    z_lower: 
+    z_upper: 

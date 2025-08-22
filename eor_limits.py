@@ -1,11 +1,31 @@
-
 import attr
 from attr import validators
 import numpy as np
 import yaml
 import ast
 
-def to_eval_and_float_array(value):
+
+##################################################################
+#####                  Validator functions                   #####
+##################################################################
+
+def check_is_1d_array(arr):
+    if arr is np.array([], dtype=object):
+        return True
+    else:
+        return all(isinstance(x, (int, float)) for x in arr)
+
+def check_is_2d_array(arr):
+    if arr is np.array([], dtype=object):
+        return True
+    else:
+        return all(isinstance(row, (list, np.ndarray)) for row in arr)
+
+def to_eval_and_obj_array(arr):
+    
+    # If arr is None, convert to empty array
+    if arr is [] or arr is None or arr is np.array([], dtype=object) or arr is np.array(None, dtype=object):
+        return np.array([], dtype=object)
     
     # Eval an item. Allows for "21**2" type expressions
     def eval_item(item):
@@ -24,59 +44,60 @@ def to_eval_and_float_array(value):
             return [process_list(x) for x in lst]
         else:
             return eval_item(lst)
-    processed = process_list(value)
+    processed = process_list(arr)
     
     return np.array(processed, dtype=object)
+
+
+##################################################################
+#####                      Data class                        #####
+##################################################################
 
 @attr.define
 class Data:
     
     z: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=float),
-        converter=to_eval_and_float_array,
+        factory=lambda: np.array([], dtype=object),
+        converter=to_eval_and_obj_array,
     )
     z_lower: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=float),
-        converter=to_eval_and_float_array,
+        factory=lambda: np.array([], dtype=object),
+        converter=to_eval_and_obj_array,
     )
     z_upper: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=float),
-        converter=to_eval_and_float_array,
+        factory=lambda: np.array([], dtype=object),
+        converter=to_eval_and_obj_array,
     )
     k: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=float),
-        converter=to_eval_and_float_array,
+        factory=lambda: np.array([], dtype=object),
+        converter=to_eval_and_obj_array,
     )
     k_lower: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=float),
-        converter=to_eval_and_float_array,
+        factory=lambda: np.array([], dtype=object),
+        converter=to_eval_and_obj_array,
     )
     k_upper: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=float),
-        converter=to_eval_and_float_array,
+        factory=lambda: np.array([], dtype=object),
+        converter=to_eval_and_obj_array,
     )
     delta_squared: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=float),
-        converter=to_eval_and_float_array,
+        factory=lambda: np.array([], dtype=object),
+        converter=to_eval_and_obj_array,
     )
-
+    
     def __attrs_post_init__(self):
-        # If z has more than one element, delta_squared and k must be 2D
-        if self.z.size > 1:
-            if not (isinstance(self.k[0], list) and isinstance(self.k_lower[0], list) and isinstance(self.k_upper[0], list) and isinstance(self.delta_squared[0], list)):
-                raise ValueError("k, k_lower, k_upper, delta_squared must be 2D if z has more than one element!")
-        # If z has only one element, delta_squared and k must be 1D
-        elif self.z.size == 1:
-            if (isinstance(self.k[0], list) and isinstance(self.k_lower[0], list) and isinstance(self.k_upper[0], list) and isinstance(self.delta_squared[0], list)):
-                raise ValueError("k, k_lower, k_upper, delta_squared must be 1D if z has only one element!")
-        elif self.z.size == 0:
-            pass  # Allow empty arrays
-        # Check that z_lower and z_upper have the same shape as z
-        if (self.z_lower.size > 0 and self.z_lower.shape != self.z.shape) or (self.z_upper.size > 0 and self.z_upper.shape != self.z.shape):
-            raise ValueError("z_lower and z_upper must have the same shape as z.")
-        # Check that k_lower and k_upper have the same shape as k
-        if (self.k_lower.size > 0 and self.k_lower.shape != self.k.shape) or (self.k_upper.size > 0 and self.k_upper.shape != self.k.shape):
-            raise ValueError("k_lower and k_upper must have the same shape as k.")
+        for attr_name in ['z', 'z_lower', 'z_upper']:
+            arr = getattr(self, attr_name)
+            if not check_is_1d_array(arr):
+                raise ValueError(f"{attr_name} must be a 1D array of numbers.")
+        for attr_name in ['k', 'k_lower', 'k_upper', 'delta_squared']:
+            arr = getattr(self, attr_name)
+            if not check_is_2d_array(arr):
+                raise ValueError(f"{attr_name} must be a 2D array of numbers.")
+            
+##################################################################
+#####                    Metadata class                      #####
+##################################################################
 
 @attr.define
 class MetaData:
@@ -86,22 +107,19 @@ class MetaData:
     year: int = attr.field(validator=validators.instance_of(int), default=0)
     doi: str = attr.field(validator=validators.instance_of(str), default='')
 
-"""
-@attr.define
-class PlotParameters:
-    linestyle: str = attr.field(validator=validators.instance_of(str), default='-')
-    linewidth: int = attr.field(validator=validators.instance_of(int), default=1)
-    marker: str = attr.field(validator=validators.instance_of(str), default='o')
-    color: str = attr.field(validator=validators.instance_of(str), default='black')
-    plot_mode: str = attr.field(validator=validators.instance_of(str), default='scatter')
-"""
-
+##################################################################
+#####                     Dataset class                      #####
+##################################################################
 @attr.define
 class DataSet:
     metadata: MetaData = attr.field(validator=validators.instance_of(MetaData))
     notes: str = attr.field(validator=validators.instance_of(list))
     data: Data = attr.field(validator=validators.instance_of(Data))
-    #plot_parameters: PlotParameters = attr.field(validator=validators.instance_of(PlotParameters))
+    
+    
+##################################################################
+#####                    Loader function                     #####
+##################################################################
 
 def load_dataset(file_path: str) -> DataSet:
     
@@ -114,5 +132,4 @@ def load_dataset(file_path: str) -> DataSet:
         metadata=MetaData(**yaml_data.get('metadata', {})),
         notes=yaml_data.get('notes', []),
         data=Data(**yaml_data.get('data', {})),
-        #plot_parameters=PlotParameters(**yaml_data.get('plot_parameters', {}))
     )

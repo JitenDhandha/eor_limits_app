@@ -14,8 +14,8 @@ data:
         [[0.177],
          [0.177],
          [0.212]]
-    k_lower: []
-    k_upper: []
+    k_lower: 
+    k_upper: 
     z: [6.5, 6.8, 7.0]
-    z_lower: []
-    z_upper: []
+    z_lower: 
+    z_upper: 

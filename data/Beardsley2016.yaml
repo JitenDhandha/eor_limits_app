@@ -14,8 +14,8 @@ data:
     k_lower: [[0.226], [0.251], [0.231], [0.231], [0.184], [0.236]]
     k_upper: [[0.251], [0.277], [0.257], [0.257], [0.210], [0.262]]
     z: [7.1, 7.1, 6.8, 6.8, 6.5, 6.5] #, 7.1, 6.8, 6.5] these last values are not in the original paper
-    z_lower: []
-    z_upper: []
+    z_lower: 
+    z_upper: 
 
 # These values come from a private communication from N. Barry, who got the files from A. Beardsley.
 # The k edges in those files were:
