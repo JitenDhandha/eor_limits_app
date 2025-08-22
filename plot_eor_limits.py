@@ -9,6 +9,7 @@ def plot(dataset,
         ax = None,
         plot_type = 'line', 
         x_axis = 'k', 
+        x_axis_errors = True,
         plot_kwargs = {}):
     
     data = dataset.data
@@ -23,6 +24,7 @@ def plot(dataset,
     elif plot_type == 'scatter':
         plot_kwargs.setdefault('fmt', 'v')
         plot_kwargs.setdefault('ms', 7)
+    label = plot_kwargs.pop('label', None)
     
     # y-axis is always delta_squared
     y_arr = data.delta_squared
@@ -35,7 +37,7 @@ def plot(dataset,
         if x_axis == 'k':
             x = np.array(data.k[iz], dtype=float)
             x_lower = data.k_lower[iz] if data.k_lower.size > 0 else None
-            x_upper = data.k_upper[iz] if data.k_upper.size > 0 else None
+            x_upper = data.k_upper[iz] if data.k_lower.size > 0 else None
         elif x_axis == 'z':
             x = data.z[iz] * np.ones_like(y)
             x_lower = data.z_lower[iz] if data.z_lower.size > 0 else None
@@ -43,9 +45,15 @@ def plot(dataset,
         else:
             raise ValueError("Invalid x_axis. Use 'k' or 'z'.")
             
-        xerr = [x - x_lower, x_upper - x] if x_lower is not None and x_upper is not None else None
-        label = fr'$z={data.z[iz]}$'
-        
+        if x_axis_errors and (x_lower is not None or x_upper is not None):
+            xerr = [x - x_lower, x_upper - x]
+        else:
+            xerr = None
+        if label is None:
+            label = fr'$z={data.z[iz]}$'
+        if label is not None and iz > 0:
+            label = ''
+            
         # Plotting the data
         if plot_type == 'line':
             ax.plot(x, y, label=label, **plot_kwargs)
@@ -58,7 +66,6 @@ def plot(dataset,
     ax.set_xlabel('$k$ [$h$ Mpc$^{-1}$]' if x_axis == 'k' else '$z$')
     ax.set_ylabel(r'$\Delta^2$ [mK$^2$]')
     ax.set_yscale('log')
-    ax.set_title(f"{meta.telescope} {meta.telescope_suffix} ({meta.year})")
     ax.legend()
     
     return ax.get_figure(), ax
