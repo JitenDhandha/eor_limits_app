@@ -10,6 +10,8 @@ def plot(dataset,
         plot_type = 'line', 
         x_axis = 'k', 
         x_axis_errors = True,
+        z_range = None,
+        k_range = None,
         plot_kwargs = {}):
     
     data = dataset.data
@@ -29,9 +31,16 @@ def plot(dataset,
     # y-axis is always delta_squared
     y_arr = data.delta_squared
     
+    # Just a flag to ensure label is only added once
+    label_added = False
+    
     for iz in range(len(data.z)):
         
         y = np.array(y_arr[iz], dtype=float)
+        
+        # Apply z range filter
+        if z_range is not None and (data.z[iz] < z_range[0] or data.z[iz] > z_range[1]):
+            continue
         
         # Plotting based on the specified plot type
         if x_axis == 'k':
@@ -44,6 +53,18 @@ def plot(dataset,
             x_upper = data.z_upper[iz] if data.z_upper.size > 0 else None
         else:
             raise ValueError("Invalid x_axis. Use 'k' or 'z'.")
+        
+        # Apply k range filter
+        if k_range is not None:
+            k_mask = (data.k[iz] >= k_range[0]) & (data.k[iz] <= k_range[1])
+            if not np.any(k_mask):
+                continue
+            y = np.where(k_mask, y, np.nan)
+            x = np.where(k_mask, x, np.nan)
+            if x_lower is not None:
+                x_lower = np.where(k_mask, x_lower, np.nan)
+            if x_upper is not None:
+                x_upper = np.where(k_mask, x_upper, np.nan)
             
         if x_axis_errors and (x_lower is not None or x_upper is not None):
             xerr = [x - x_lower, x_upper - x]
@@ -51,8 +72,11 @@ def plot(dataset,
             xerr = None
         if label is None:
             label = fr'$z={data.z[iz]}$'
-        if label is not None and iz > 0:
-            label = ''
+        else:
+            if label_added:
+                label = ''
+            else:
+                label_added = True
             
         # Plotting the data
         if plot_type == 'line':
