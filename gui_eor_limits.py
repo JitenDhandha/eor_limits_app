@@ -20,7 +20,8 @@ def load_datasets():
 
 def main():
     
-    st.title("EoR Limits Plotter")
+    st.title("EoR 21-cm Power Spectrum Limits Plotter")
+    st.text("Interactive tool to visualize EoR 21-cm power spectrum limits from various datasets.")
     datasets = load_datasets()
     selected = {}
     
