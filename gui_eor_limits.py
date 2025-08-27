@@ -1,5 +1,4 @@
 import os
-import yaml
 import streamlit as st
 import plot_eor_limits
 import eor_limits
