@@ -57,7 +57,7 @@ def main():
             x_axis_errors = st.checkbox("Show X axis errors", value=True, key="x_axis_errors")
         with cols[1]:
             z_range = st.slider("z range", min_value=5.0, max_value=50.0, value=(5.0,50.0), step=0.1, key="z_range")
-            k_range = st.slider("k range", min_value=0.001, max_value=100.0, value=(0.001,100.0), step=0.001, key="k_range")
+            log_k_range = st.slider("log(k) range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1, key="k_range")
             year_range = st.slider("year range", min_value=2000, max_value=2050, value=(2000,2050), step=1, key="year_range")
 
     plot_kwargs_code = st.text_area("plot_kwargs_list (Python list of dicts, one per selected dataset)", "None", key="plot_kwargs_list")
@@ -81,7 +81,7 @@ def main():
             x_axis=x_axis,
             x_axis_errors=x_axis_errors,
             z_range=z_range,
-            k_range=k_range,
+            k_range=(10**log_k_range[0], 10**log_k_range[1]),
             year_range=year_range,
             plot_kwargs_list=plot_kwargs_list
         )
