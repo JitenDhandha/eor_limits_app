@@ -3,12 +3,15 @@ import streamlit as st
 import plot_eor_limits
 import eor_limits
 
-def load_datasets():
+def load_datasets(lowest_only):
     yaml_files = [os.path.basename(f) for f in os.listdir('data') if f.endswith('.yaml')]
     datasets = {}
     for fname in yaml_files:
         try:
-            dataset = eor_limits.get_dataset(fname)
+            if lowest_only:
+                dataset = eor_limits.get_dataset_lowest_limits(fname)
+            else:
+                dataset = eor_limits.get_dataset(fname)
             telescope = getattr(dataset.metadata, 'telescope', None)
             if telescope not in datasets:
                 datasets[telescope] = []
@@ -21,13 +24,30 @@ def main():
     
     st.title("EoR 21-cm Power Spectrum Limits Plotter")
     st.text("Interactive tool to visualize EoR 21-cm power spectrum limits from various datasets.")
-    datasets = load_datasets()
-    selected = {}
     
     # Container for the plot first
     cont_plot = st.container()
 
+    # Columns for plot controls
+    with st.container():
+        cols = st.columns(2, vertical_alignment='top')
+        with cols[0]:
+            plot_type = st.selectbox("Plot type", ["line", "scatter"], key="plot_type")
+            x_axis = st.selectbox("X axis", ["k", "z"], key="x_axis")
+            x_axis_errors = st.checkbox("Show X axis errors", value=True, key="x_axis_errors")
+            lowest_only = st.checkbox("Show only lowest limit per z (for k axis)", value=False, key="lowest_only")
+        with cols[1]:
+            z_range = st.slider("z range", min_value=5.0, max_value=50.0, value=(5.0,50.0), step=0.1, key="z_range")
+            log_k_range = st.slider("log(k) range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1, key="k_range")
+            year_range = st.slider("year range", min_value=2000, max_value=2050, value=(2000,2050), step=1, key="year_range")
+
+    # Load datasets (cached in session state)
+    if 'dataset_cache' not in st.session_state:
+        st.session_state['dataset_cache'] = load_datasets(False)
+        st.session_state['dataset_cache_lowest_only'] = load_datasets(True)
+    datasets = st.session_state['dataset_cache_lowest_only'] if lowest_only else st.session_state['dataset_cache']
     # Sidebar controls for dataset selection
+    selected = {}
     with st.sidebar:
         st.markdown("**Select Datasets**")
         all_keys = []
@@ -46,19 +66,6 @@ def main():
                 checked = st.checkbox(fname, key=key, value=select_all)
                 if checked:
                     selected[key] = (dataset, fname)
-    
-    # Columns for plot controls
-    with st.container():
-        cols = st.columns(2, vertical_alignment='top')
-        with cols[0]:
-            plot_type = st.selectbox("Plot type", ["line", "scatter"], key="plot_type")
-            x_axis = st.selectbox("X axis", ["k", "z"], key="x_axis")
-            # Align this last one to match the other column
-            x_axis_errors = st.checkbox("Show X axis errors", value=True, key="x_axis_errors")
-        with cols[1]:
-            z_range = st.slider("z range", min_value=5.0, max_value=50.0, value=(5.0,50.0), step=0.1, key="z_range")
-            log_k_range = st.slider("log(k) range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1, key="k_range")
-            year_range = st.slider("year range", min_value=2000, max_value=2050, value=(2000,2050), step=1, key="year_range")
 
     plot_kwargs_code = st.text_area("plot_kwargs_list (Python list of dicts, one per selected dataset)", "None", key="plot_kwargs_list")
     try:
