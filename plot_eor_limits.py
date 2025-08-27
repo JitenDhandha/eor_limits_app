@@ -70,17 +70,16 @@ def plot(datasets,
                 xerr = None
             # Label
             label = kwargs.get('label', f'{meta.telescope} ({meta.author}, {meta.year}) z={z_val}')
-            # Plotting
+            # Plotting (note that the same legendgroup is used so both traces don't show up in the legends)
             if plot_type == 'line':
-                fig.add_trace(go.Scatter(x=x, y=y, mode='lines+markers', name=label, **{k:v for k,v in kwargs.items() if k != 'label'}))
-                if xerr is not None:
-                    fig.add_trace(go.Scatter(x=x, y=y, error_x=dict(array=xerr[1], arrayminus=xerr[0]), mode='lines', name=label, line=dict(color='rgba(0,0,0,0.2)')))
+                mode = 'lines+markers'
             elif plot_type == 'scatter':
-                fig.add_trace(go.Scatter(x=x, y=y, mode='markers', name=label, **{k:v for k,v in kwargs.items() if k != 'label'}))
-                if xerr is not None:
-                    fig.add_trace(go.Scatter(x=x, y=y, error_x=dict(array=xerr[1], arrayminus=xerr[0]), mode='markers', name=label, marker=dict(color='rgba(0,0,0,0.2)')))
+                mode = 'markers'
             else:
                 raise ValueError("Invalid plot_type. Use 'line' or 'scatter'.")
+            fig.add_trace(go.Scatter(x=x, y=y, mode=mode,
+                        error_x=dict(type='data',symmetric=False,array=xerr[1], arrayminus=xerr[0]) if xerr is not None else None,
+                        name=label, legendgroup=label, **{k:v for k,v in kwargs.items() if k != 'label'}))
     fig.update_layout(
         xaxis_title='k [h Mpc$^{-1}$]' if x_axis == 'k' else 'z',
         yaxis_title='Δ² [mK²]',
