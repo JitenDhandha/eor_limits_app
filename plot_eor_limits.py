@@ -92,7 +92,7 @@ def plot(datasets,
                 raise ValueError("Invalid plot_type. Use 'line' or 'scatter'.")
             fig.add_trace(go.Scatter(x=x, y=y, mode=mode,
                         error_x=error_x,
-                        name=label, legendgroup=label, 
+                        name=label,
                         marker=marker_kwargs,
                         line=line_kwargs,
                         **{k:v for k,v in kwargs.items()})
