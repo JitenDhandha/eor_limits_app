@@ -81,7 +81,7 @@ def plot(datasets,
                         error_x=dict(type='data',symmetric=False,array=xerr[1], arrayminus=xerr[0]) if xerr is not None else None,
                         name=label, legendgroup=label, **{k:v for k,v in kwargs.items() if k != 'label'}))
     fig.update_layout(
-        xaxis_title='k [h Mpc$^{-1}$]' if x_axis == 'k' else 'z',
+        xaxis_title='k [h/Mpc]' if x_axis == 'k' else 'Redshift z',
         yaxis_title='Δ² [mK²]',
         yaxis_type='log',
         title='EoR Limits',
