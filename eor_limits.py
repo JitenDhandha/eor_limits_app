@@ -84,6 +84,7 @@ class Data:
     )
     
     def __attrs_post_init__(self):
+        # Check dimensionality
         for attr_name in ['z', 'z_lower', 'z_upper']:
             arr = getattr(self, attr_name)
             if not check_is_1d_array(arr):
@@ -92,6 +93,14 @@ class Data:
             arr = getattr(self, attr_name)
             if not check_is_2d_array(arr):
                 raise ValueError(f"{attr_name} must be a 2D array of numbers.")
+        # Check sizes
+        if (not self.z_lower.size == 0 and not self.z_lower.shape == self.z.shape) or \
+            (not self.z_upper.size == 0 and not self.z_upper.shape == self.z.shape):
+            raise ValueError("z_lower and z_upper must be the same shape as z.")
+        if (not self.k_lower.size == 0 and not self.k_lower.shape == self.k.shape) or \
+            (not self.k_upper.size == 0 and not self.k_upper.shape == self.k.shape) or \
+            (not self.delta_squared.shape == self.k.shape):
+            raise ValueError("k, k_lower, k_upper, and delta_squared must be the same shape.")
             
 ##################################################################
 #####                    Metadata class                      #####
@@ -112,7 +121,7 @@ class MetaData:
 @attr.define
 class DataSet:
     metadata: MetaData = attr.field(validator=attr.validators.instance_of(MetaData))
-    notes: str = attr.field(validator=attr.validators.instance_of(list))
+    notes: list = attr.field(validator=attr.validators.instance_of(list))
     data: Data = attr.field(validator=attr.validators.instance_of(Data))
     
 ##################################################################
