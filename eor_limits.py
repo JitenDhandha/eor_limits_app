@@ -7,23 +7,17 @@ import os
 #####                  Validator functions                   #####
 ##################################################################
 
-def check_is_1d_array(arr):
-    if arr is np.array([], dtype=object):
-        return True
-    else:
-        return all(isinstance(x, (int, float)) for x in arr)
+def check_is_empty(arr):
+    return (arr is [] or arr is None or arr is np.array([], dtype=object) or arr is np.array(None, dtype=object))
 
-def check_is_2d_array(arr):
-    if arr is np.array([], dtype=object):
-        return True
-    else:
-        return all(isinstance(row, (list, np.ndarray)) for row in arr)
+def check_is_allowed(arr, allowed_types):
+    return check_is_empty(arr) or all(isinstance(x, allowed_types) for x in arr)
 
-def to_eval_and_obj_array(arr):
+def convert_to_empty_and_eval(arr):
     
-    # If arr is None, convert to empty array
-    if arr is [] or arr is None or arr is np.array([], dtype=object) or arr is np.array(None, dtype=object):
-        return np.array([], dtype=object)
+    # Convert to empty array if needed
+    if check_is_empty(arr):
+        arr = np.array([], dtype=object)
     
     # Eval an item. Allows for "21**2" type expressions
     def eval_item(item):
@@ -56,42 +50,42 @@ class Data:
     
     z: np.ndarray = attr.field(
         factory=lambda: np.array([], dtype=object),
-        converter=to_eval_and_obj_array,
+        converter=convert_to_empty_and_eval,
     )
     z_lower: np.ndarray = attr.field(
         factory=lambda: np.array([], dtype=object),
-        converter=to_eval_and_obj_array,
+        converter=convert_to_empty_and_eval,
     )
     z_upper: np.ndarray = attr.field(
         factory=lambda: np.array([], dtype=object),
-        converter=to_eval_and_obj_array,
+        converter=convert_to_empty_and_eval,
     )
     k: np.ndarray = attr.field(
         factory=lambda: np.array([], dtype=object),
-        converter=to_eval_and_obj_array,
+        converter=convert_to_empty_and_eval,
     )
     k_lower: np.ndarray = attr.field(
         factory=lambda: np.array([], dtype=object),
-        converter=to_eval_and_obj_array,
+        converter=convert_to_empty_and_eval,
     )
     k_upper: np.ndarray = attr.field(
         factory=lambda: np.array([], dtype=object),
-        converter=to_eval_and_obj_array,
+        converter=convert_to_empty_and_eval,
     )
     delta_squared: np.ndarray = attr.field(
         factory=lambda: np.array([], dtype=object),
-        converter=to_eval_and_obj_array,
+        converter=convert_to_empty_and_eval,
     )
     
     def __attrs_post_init__(self):
         # Check dimensionality
         for attr_name in ['z', 'z_lower', 'z_upper']:
             arr = getattr(self, attr_name)
-            if not check_is_1d_array(arr):
+            if not check_is_allowed(arr, (int, float)):
                 raise ValueError(f"{attr_name} must be a 1D array of numbers.")
         for attr_name in ['k', 'k_lower', 'k_upper', 'delta_squared']:
             arr = getattr(self, attr_name)
-            if not check_is_2d_array(arr):
+            if not check_is_allowed(arr, (list, np.ndarray)):
                 raise ValueError(f"{attr_name} must be a 2D array of numbers.")
         # Check sizes
         if (not self.z_lower.size == 0 and not self.z_lower.shape == self.z.shape) or \
