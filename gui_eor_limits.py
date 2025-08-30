@@ -22,8 +22,26 @@ def load_datasets(lowest_only):
 
 def main():
     
-    st.title("EoR 21-cm Power Spectrum Limits Plotter")
-    st.text("Interactive tool to visualize EoR 21-cm power spectrum limits from various datasets.")
+    st.title("21-cm Power Spectrum Limits Plotter")
+    st.text(
+    """\
+This is an interactive tool to visualize published 21-cm power spectrum limits from various experiments. \
+You can select datasets from the sidebar (collapsible on the top left corner of the page), choose plotting \
+options, and customize the appearance of the plots. \
+The datasets are sourced from the 'eor_limits' Python package, which provides a standardized interface \
+to access these limits.
+
+Note that for each dataset, the limits are grouped by redshift. For datasets containing multiple fields or \
+polarizations at the same redshift, they are treated as separate redshift entries.
+    """
+    )
+    st.info(
+    """\
+Pro tips: You can click on a legend item to toggle its visibility. Double-clicking a legend item will isolate it. \
+Furthermore, you can zoom into a specific region of the plot by clicking and dragging your mouse, or reset \
+the view by double-clicking on the plot area. Hovering over data points will show detailed information about that point.
+    """
+    )
     
     # Container for the plot first
     cont_plot = st.container()
