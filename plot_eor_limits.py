@@ -15,6 +15,7 @@ def _gradient_colors(base_color, n):
 def plot(datasets, 
         plot_type = 'line', 
         x_axis = 'k', 
+        x_axis_log = False,
         x_axis_errors = True,
         z_range = None,
         k_range = None,
@@ -122,10 +123,13 @@ def plot(datasets,
                         )
     
     fig.update_layout(
-        xaxis_title='k [h/Mpc]' if x_axis == 'k' else 'Redshift z',
-        yaxis_title='Δ² [mK²]',
-        yaxis_type='log',
-        title='EoR Limits',
-        legend_title="z"
+        xaxis = dict(
+            type='log' if x_axis_log else 'linear', exponentformat='e',
+            title='k [h/Mpc]' if x_axis == 'k' else 'Redshift z',
+        ),
+        yaxis = dict(
+            type='log', exponentformat='e',
+            title='Δ² [mK²]',
+        ),
     )
     return fig
