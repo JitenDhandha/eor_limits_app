@@ -1,6 +1,5 @@
 metadata:
     telescope: HERA
-    telescope_suffix: Phase I
     author: HERA collaboration
     year: 2022
     doi: 10.3847/1538-4357/ac1c78
@@ -21,3 +20,4 @@ data:
     z: [7.93, 10.37]
     z_lower: 
     z_upper: 
+    z_tags:

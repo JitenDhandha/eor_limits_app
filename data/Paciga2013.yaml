@@ -1,6 +1,5 @@
 metadata:
     telescope: GMRT
-    telescope_suffix: ''
     author: Paciga
     year: 2013
     doi: 10.1093/mnras/stt753
@@ -13,3 +12,4 @@ data:
     z: [8.6]
     z_lower: 
     z_upper: 
+    z_tags:

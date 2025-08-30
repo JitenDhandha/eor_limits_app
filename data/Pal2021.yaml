@@ -1,6 +1,5 @@
 metadata:
     telescope: GMRT
-    telescope_suffix: ''
     author: Pal
     year: 2021
     doi: 10.1093/mnras/staa3831
@@ -13,3 +12,4 @@ data:
     z: [8.28]
     z_lower: 
     z_upper: 
+    z_tags:

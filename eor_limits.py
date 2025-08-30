@@ -13,11 +13,13 @@ def check_is_empty(arr):
 def check_is_allowed(arr, allowed_types):
     return check_is_empty(arr) or all(isinstance(x, allowed_types) for x in arr)
 
+def convert_to_empty(arr):
+    return np.array([], dtype=object) if check_is_empty(arr) else np.array(arr, dtype=object)
+
 def convert_to_empty_and_eval(arr):
     
     # Convert to empty array if needed
-    if check_is_empty(arr):
-        arr = np.array([], dtype=object)
+    arr = convert_to_empty(arr)
     
     # Eval an item. Allows for "21**2" type expressions
     def eval_item(item):
@@ -48,34 +50,14 @@ def convert_to_empty_and_eval(arr):
 @attr.define
 class Data:
     
-    z: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=object),
-        converter=convert_to_empty_and_eval,
-    )
-    z_lower: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=object),
-        converter=convert_to_empty_and_eval,
-    )
-    z_upper: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=object),
-        converter=convert_to_empty_and_eval,
-    )
-    k: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=object),
-        converter=convert_to_empty_and_eval,
-    )
-    k_lower: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=object),
-        converter=convert_to_empty_and_eval,
-    )
-    k_upper: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=object),
-        converter=convert_to_empty_and_eval,
-    )
-    delta_squared: np.ndarray = attr.field(
-        factory=lambda: np.array([], dtype=object),
-        converter=convert_to_empty_and_eval,
-    )
+    z: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
+    z_lower: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
+    z_upper: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
+    z_tags: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty)
+    k: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
+    k_lower: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
+    k_upper: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
+    delta_squared: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
     
     def __attrs_post_init__(self):
         # Check dimensionality
@@ -87,6 +69,8 @@ class Data:
             arr = getattr(self, attr_name)
             if not check_is_allowed(arr, (list, np.ndarray)):
                 raise ValueError(f"{attr_name} must be a 2D array of numbers.")
+        if not check_is_allowed(self.z_tags, str):
+            raise ValueError("z_tags must be a 1D array of strings.")
         # Check sizes
         if (not self.z_lower.size == 0 and not self.z_lower.shape == self.z.shape) or \
             (not self.z_upper.size == 0 and not self.z_upper.shape == self.z.shape):
@@ -95,6 +79,8 @@ class Data:
             (not self.k_upper.size == 0 and not self.k_upper.shape == self.k.shape) or \
             (not self.delta_squared.shape == self.k.shape):
             raise ValueError("k, k_lower, k_upper, and delta_squared must be the same shape.")
+        if (not self.z_tags.size == 0 and not self.z_tags.shape == self.z.shape):
+            raise ValueError("z_tags must be the same shape as z.")
             
 ##################################################################
 #####                    Metadata class                      #####
@@ -103,7 +89,6 @@ class Data:
 @attr.define
 class MetaData:
     telescope: str = attr.field(validator=attr.validators.instance_of(str), default='')
-    telescope_suffix: str = attr.field(validator=attr.validators.instance_of(str), default='')
     author: str = attr.field(validator=attr.validators.instance_of(str), default='')
     year: int = attr.field(validator=attr.validators.instance_of(int), default=0)
     doi: str = attr.field(validator=attr.validators.instance_of(str), default='')
@@ -169,11 +154,10 @@ def get_dataset_lowest_limits(filepath: str) -> DataSet:
             z=dataset.data.z,
             z_lower=dataset.data.z_lower,
             z_upper=dataset.data.z_upper,
+            z_tags=dataset.data.z_tags,
             k=k_L,
             k_lower=k_lower_L,
             k_upper=k_upper_L,
             delta_squared=dsq_L,
         )
     )
-        
-    

@@ -1,6 +1,5 @@
 metadata:
     telescope: OVRO-LWA
-    telescope_suffix: ''
     author: Garsden
     year: 2021
     doi: 10.1093/mnras/stab1671 
@@ -13,3 +12,4 @@ data:
     z: [28]
     z_lower: [25]
     z_upper: [31]
+    z_tags:

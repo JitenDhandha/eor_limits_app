@@ -1,6 +1,5 @@
 metadata:
     telescope: MWA
-    telescope_suffix: Phase I
     author: Yoshiura
     year: 2021
     doi: 10.1093/mnras/stab1560
@@ -37,3 +36,5 @@ data:
         [17.9, 17.9, 17.9, 17.9, 17.9, 17.9, 17.9, 17.9,
         16.4, 16.4, 16.4, 16.4, 16.4, 16.4, 16.4, 16.4,
         15.2, 15.2, 15.2, 15.2, 15.2, 15.2, 15.2, 15.2]
+    z_tags: ['EoR0 E-W', 'EoR0 N-S', 'EoR1 E-W', 'EoR1 N-S',
+            'EoR0 E-W', 'EoR0 N-S', 'EoR1 E-W', 'EoR1 N-S']

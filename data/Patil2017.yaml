@@ -1,6 +1,5 @@
 metadata:
     telescope: LOFAR
-    telescope_suffix: ''
     author: Patil
     year: 2017
     doi: 10.3847/1538-4357/aa63e7
@@ -28,3 +27,4 @@ data:
     z: [8.3, 9.15, 10.1]
     z_lower: [7.9, 8.7, 9.6]
     z_upper: [8.7, 9.6, 10.6]
+    z_tags:
