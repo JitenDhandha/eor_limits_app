@@ -30,16 +30,20 @@ def main():
 
     # Columns for plot controls
     with st.container():
-        cols = st.columns(2, vertical_alignment='top')
+        cols = st.columns(2)
         with cols[0]:
             plot_type = st.selectbox("Plot type", ["line", "scatter"], key="plot_type")
             x_axis = st.selectbox("X axis", ["k", "z"], key="x_axis")
-            x_axis_errors = st.checkbox("Show X axis errors", value=True, key="x_axis_errors")
-            lowest_only = st.checkbox("Show only lowest limit per z (for k axis)", value=False, key="lowest_only")
+            cols2 = st.columns(2)
+            with cols2[0]:
+                x_axis_errors = st.checkbox("Show x axis errors", value=True, key="x_axis_errors")
+            with cols2[1]:
+                x_axis_log = st.checkbox("Log x axis", value=False, key="x_axis_log")
+            lowest_only = st.checkbox("Show only lowest limit per z", value=False, key="lowest_only")
         with cols[1]:
-            z_range = st.slider("z range", min_value=5.0, max_value=50.0, value=(5.0,50.0), step=0.1, key="z_range")
+            z_range = st.slider("z range", min_value=5.0, max_value=30.0, value=(5.0,30.0), step=0.1, key="z_range")
             log_k_range = st.slider("log(k) range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1, key="k_range")
-            year_range = st.slider("year range", min_value=2000, max_value=2050, value=(2000,2050), step=1, key="year_range")
+            year_range = st.slider("year range", min_value=2010, max_value=2030, value=(2010,2030), step=1, key="year_range")
 
     # Load datasets (cached in session state)
     if 'dataset_cache' not in st.session_state:
@@ -86,6 +90,7 @@ def main():
             datasets_to_plot,
             plot_type=plot_type,
             x_axis=x_axis,
+            x_axis_log=x_axis_log,
             x_axis_errors=x_axis_errors,
             z_range=z_range,
             k_range=(10**log_k_range[0], 10**log_k_range[1]),
