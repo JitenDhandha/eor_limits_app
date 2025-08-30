@@ -1,6 +1,5 @@
 metadata:
     telescope: MWA
-    telescope_suffix: 32T?
     author: Dillon
     year: 2014
     doi: 10.1103/PhysRevD.89.023002
@@ -15,3 +14,4 @@ data:
     z: [11.68, 10.868, 10.153, 9.518, 8.444, 7.985, 7.57, 7.1896, 6.84, 6.52, 6.23]
     z_lower: 
     z_upper: 
+    z_tags:

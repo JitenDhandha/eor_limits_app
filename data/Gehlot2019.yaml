@@ -1,6 +1,5 @@
 metadata:
     telescope: LOFAR
-    telescope_suffix: ''
     author: Gehlot
     year: 2019
     doi: 10.1093/mnras/stz1937 
@@ -13,3 +12,4 @@ data:
     z: [22.5]
     z_lower: [19.8]
     z_upper: [25.2]
+    z_tags:

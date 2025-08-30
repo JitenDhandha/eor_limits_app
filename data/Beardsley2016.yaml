@@ -1,6 +1,5 @@
 metadata:
     telescope: MWA
-    telescope_suffix: Phase I
     author: Beardsley
     year: 2019
     doi: 10.3847/1538-4357/833/1/102
@@ -16,6 +15,7 @@ data:
     z: [7.1, 7.1, 6.8, 6.8, 6.5, 6.5] #, 7.1, 6.8, 6.5] these last values are not in the original paper
     z_lower: 
     z_upper: 
+    z_tags: ['Pol E-W', 'Pol N-S', 'Pol E-W', 'Pol N-S', 'Pol E-W', 'Pol N-S'] 
 
 # These values come from a private communication from N. Barry, who got the files from A. Beardsley.
 # The k edges in those files were:

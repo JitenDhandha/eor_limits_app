@@ -1,6 +1,5 @@
 metadata:
     telescope: PAPER
-    telescope_suffix: '64'
     author: Kolopanis
     year: 2019
     doi: 10.3847/1538-4357/ab3e3a
@@ -16,6 +15,7 @@ data:
     z: [7.49, 8.13, 8.37, 8.68, 9.93, 10.88]
     z_lower: 
     z_upper: 
+    z_tags:
 
 # The k values provided from a private communication from M. Kolopanis:
 # 11.65 [0.01051446 0.04626863 0.09072753 0.13558262 0.18053885 0.22553574 0.270553   0.31558192 0.36061813 0.40565921 0.45070368]

@@ -1,12 +1,8 @@
 metadata:
     telescope: HERA
-    telescope_suffix: Phase I
     author: HERA collaboration
     year: 2023
     doi: 10.3847/1538-4357/acaf50
-
-notes:
-    - Since the power spectra were reported for two bands and five fields, we report here: Band 1 Field A, Band 1 Field B, Band 1 Field C, Band 1 Field D, Band 1 Field E, Band 2 Field A, Band 2 Field B, Band 2 Field C, Band 2 Field D, Band 2 Field E.
 
 data:
     delta_squared:
@@ -56,4 +52,6 @@ data:
     z: [10.37, 10.37, 10.37, 10.37, 10.37, 7.93, 7.93, 7.93, 7.93, 7.93]
     z_lower: 
     z_upper: 
+    z_tags: ['Band 1 Field A', 'Band 1 Field B', 'Band 1 Field C', 'Band 1 Field D', 'Band 1 Field E', 
+            'Band 2 Field A', 'Band 2 Field B', 'Band 2 Field C', 'Band 2 Field D', 'Band 2 Field E']
 

@@ -1,6 +1,5 @@
 metadata:
     telescope: MWA
-    telescope_suffix: ''
     author: Ewall-Wice
     year: 2016
     doi: 10.1093/mnras/stw1022
@@ -19,3 +18,4 @@ data:
     z: [12.2, 15.35, 17.05]
     z_lower: 
     z_upper: 
+    z_tags:
