@@ -1,15 +1,25 @@
 metadata:
     telescope: TelescopeName
-    telescope_suffix: Phase I
     author: AuthorName
     year: 2025
     doi: DoiLink
 
+notes:
+    - This is a note about the data, e.g. the k-bins calculated assuming logarithmic spacing.
+    - This is another note about the data, e.g. extra k-bins were privately acquired from the author.
+
 data:
-    delta_squared: []
-    k: []
-    k_lower: 
-    k_upper: 
-    z: [10]
+    delta_squared:
+        [[100**2, 200**2],
+         [200**2, 300**2],
+         [300**2, 400**2]]
+    k:
+        [[0.1, 0.2],
+         [0.2, 0.3],
+         [0.3, 0.4]]
+    k_lower:
+    k_upper:
+    z: [6, 7, 8]
     z_lower: 
-    z_upper: 
+    z_upper:
+    z_tags: ['Band 1', 'Band 2', 'Band 3']
