@@ -23,6 +23,7 @@ def load_datasets(lowest_only):
 def main():
     
     st.title("21-cm Power Spectrum Limits Plotter")
+    st.set_page_config(page_title="21-cm Power Spectrum Limits Plotter")
     st.text(
     """\
 This is an interactive tool to visualize published 21-cm power spectrum limits from various experiments. \
