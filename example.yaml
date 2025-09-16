@@ -8,6 +8,10 @@ notes:
     - This is a note about the data, e.g. the k-bins calculated assuming logarithmic spacing.
     - This is another note about the data, e.g. extra k-bins were privately acquired from the author.
 
+# delta_squared, k, k_lower, k_upper should always (if not blank) be 2D arrays with shape (N_z, N_k)
+# z, z_lower, z_upper should always (if not blank) be 1D arrays with shape (N_z,)
+# k, k_lower, k_upper are in units of h Mpc^-1
+# delta_squared are always in units of mK^2
 data:
     delta_squared:
         [[100**2, 200**2],
