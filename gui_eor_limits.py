@@ -65,10 +65,13 @@ the view by double-clicking on the plot area. Hovering over data points will sho
             year_range = st.slider("year range", min_value=2010, max_value=2030, value=(2010,2030), step=1, key="year_range")
 
     # Load datasets (cached in session state)
-    if 'dataset_cache' not in st.session_state:
-        st.session_state['dataset_cache'] = load_datasets(False)
-        st.session_state['dataset_cache_lowest_only'] = load_datasets(True)
-    datasets = st.session_state['dataset_cache_lowest_only'] if lowest_only else st.session_state['dataset_cache']
+    #if 'dataset_cache' not in st.session_state:
+    #    st.session_state['dataset_cache'] = load_datasets(False)
+    #    st.session_state['dataset_cache_lowest_only'] = load_datasets(True)
+    #datasets = st.session_state['dataset_cache_lowest_only'] if lowest_only else st.session_state['dataset_cache']
+    dataset_all = load_datasets(False)
+    dataset_lowest = load_datasets(True)
+    datasets = dataset_lowest if lowest_only else dataset_all
     # Sidebar controls for dataset selection
     selected = {}
     with st.sidebar:
