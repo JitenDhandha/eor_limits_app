@@ -71,7 +71,7 @@ the view by double-clicking on the plot area. Hovering over data points will sho
     # Sidebar controls for dataset selection
     selected = {}
     with st.sidebar:
-        st.markdown("**Select Datasets**")
+        #st.markdown("**Select Datasets**")
         all_keys = []
         dataset_info = []
         for telescope, dslist in datasets.items():
@@ -80,12 +80,12 @@ the view by double-clicking on the plot area. Hovering over data points will sho
                 key = f"{telescope}_{fname}"
                 all_keys.append(key)
                 dataset_info.append((telescope, fname, dataset, key))
-        select_all = st.checkbox("Select/Deselect All", value=False, key="select_all")
+        #select_all = st.checkbox("Select/Deselect All", value=False, key="select_all")
         for telescope in datasets.keys():
             st.markdown(f"*{telescope}*")
             dslist = [info for info in dataset_info if info[0] == telescope]
             for _, fname, dataset, key in dslist:
-                checked = st.checkbox(fname, key=key, value=select_all)
+                checked = st.checkbox(fname, key=key, value=False)
                 if checked:
                     selected[key] = (dataset, fname)
 
