@@ -3,9 +3,8 @@ metadata:
     author: Barry
     year: 2019
     doi: 10.3847/1538-4357/ab40a8
-
-notes: 
-    - The k_lower and k_upper values are calculated by assuming linear binning. Not authoritative
+    notes: 
+        - The k_lower and k_upper values are calculated by assuming linear binning. Not authoritative
 
 data:
     delta_squared: [[nan, 9.22e3, 3.89e3, 6.32e3, 9.61e3, 1.56e4, 2.07e4, 8.32e4,

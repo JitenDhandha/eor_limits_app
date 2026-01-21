@@ -2,10 +2,9 @@ metadata:
     telescope: MWA
     author: Nunhokee
     year: 2025
-    doi: 10.3847/1538-4357/adda45 
-
-notes:
-    - For each redshift, the first instance is the East-West polarization, and the second is North-South.
+    doi: 10.3847/1538-4357/adda45
+    notes:
+        - For each redshift, the first instance is the East-West polarization, and the second is North-South.
 
 data:
     delta_squared:
