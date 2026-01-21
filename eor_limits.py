@@ -128,36 +128,56 @@ def get_dataset(file_path: str) -> DataSet:
 # WARNING: This might be over-estimating the lowest limit, if the lowest k-bin is erroneously low.
 def get_dataset_lowest_limits(filepath: str) -> DataSet:
     
+    # Retrieve dataset
     dataset = get_dataset(filepath)
-    dsq_L = []
-    k_L = []
-    k_lower_L = []
-    k_upper_L = []
-    for iz in range(len(dataset.data.z)):
-        delta_squared_z = np.array(dataset.data.delta_squared[iz], dtype=float)
-        min_index = np.nanargmin(delta_squared_z)
-        # Remove all but the minimum value in this z slice
-        dsq_L.append([delta_squared_z[min_index]])
-        k_L.append([dataset.data.k[iz][min_index]])
+    
+    # Prepare lists to hold lowest limits
+    z_L, k_L, dsq_L, k_lower_L, k_upper_L, z_lower_L, z_upper_L, z_tags_L = [], [], [], [], [], [], [], []
+    
+    # Loop over unique z values
+    z_arr = dataset.data.z
+    unique_z = np.unique(z_arr)
+    for z_val in unique_z:
+        # Find indices corresponding to this z value
+        indices = np.where(z_arr == z_val)[0]
+        min_val = np.inf
+        min_idx = None
+        # Loop over these indices to find the minimum delta_squared
+        for iz in indices:
+            ik = np.nanargmin(dataset.data.delta_squared[iz])
+            min_dsq = np.nanmin(dataset.data.delta_squared[iz])
+            if min_dsq < min_val:
+                min_val = min_dsq
+                min_idx = (iz, ik)
+        iz, ik = min_idx
+        # Append this minimum to the new dataset
+        z_L.append(z_val)
+        k_L.append([dataset.data.k[iz][ik]])
+        dsq_L.append([dataset.data.delta_squared[iz][ik]])
         if dataset.data.k_lower.size > 0:
-            k_lower_L.append([dataset.data.k_lower[iz][min_index]])
-        else:
-            pass
+            k_lower_L.append([dataset.data.k_lower[iz][ik]])
         if dataset.data.k_upper.size > 0:
-            k_upper_L.append([dataset.data.k_upper[iz][min_index]])
-        else:
-            pass
-    return  DataSet(
+            k_upper_L.append([dataset.data.k_upper[iz][ik]])
+        if dataset.data.z_lower.size > 0:
+            z_lower_L.append(dataset.data.z_lower[iz])
+        if dataset.data.z_upper.size > 0:
+            z_upper_L.append(dataset.data.z_upper[iz])
+        if dataset.data.z_tags.size > 0:
+            z_tags_L.append(dataset.data.z_tags[iz])
+
+    
+    # Create new DataSet with lowest limits
+    return DataSet(
         metadata=dataset.metadata,
         notes=dataset.notes,
         data=Data(
-            z=dataset.data.z,
-            z_lower=dataset.data.z_lower,
-            z_upper=dataset.data.z_upper,
-            z_tags=dataset.data.z_tags,
-            k=k_L,
-            k_lower=k_lower_L,
-            k_upper=k_upper_L,
-            delta_squared=dsq_L,
+            z=np.array(z_L, dtype=object),
+            z_lower=np.array(z_lower_L, dtype=object) if z_lower_L else np.array([], dtype=object),
+            z_upper=np.array(z_upper_L, dtype=object) if z_upper_L else np.array([], dtype=object),
+            z_tags=np.array(z_tags_L, dtype=object) if z_tags_L else np.array([], dtype=object),
+            k=np.array(k_L, dtype=object),
+            k_lower=np.array(k_lower_L, dtype=object) if k_lower_L else np.array([], dtype=object),
+            k_upper=np.array(k_upper_L, dtype=object) if k_upper_L else np.array([], dtype=object),
+            delta_squared=np.array(dsq_L, dtype=object),
         )
     )
