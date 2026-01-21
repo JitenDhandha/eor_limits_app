@@ -3,10 +3,9 @@ metadata:
     author: Li
     year: 2019
     doi: 10.3847/1538-4357/ab55e4
-
-notes:
-    - The k_lower and k_upper values are calculated by assuming linear binning. Not authoritative.
-    - For each redshift, the first instance is the East-West polarization, and the second is North-South.
+    notes:
+        - The k_lower and k_upper values are calculated by assuming linear binning. Not authoritative.
+        - For each redshift, the first instance is the East-West polarization, and the second is North-South.
 
 data:
     delta_squared: 

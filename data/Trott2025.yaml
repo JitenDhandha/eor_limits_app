@@ -3,9 +3,8 @@ metadata:
     author: Trott
     year: 2025
     doi: 10.3847/1538-4357/adff80
-
-notes:
-    - For each redshift, the first instance is the East-West polarization, and the second is North-South, and third is combined.
+    notes:
+        - For each redshift, the first instance is the East-West polarization, and the second is North-South, and third is combined.
 
 data:
     delta_squared:

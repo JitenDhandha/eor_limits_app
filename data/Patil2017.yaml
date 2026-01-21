@@ -3,9 +3,8 @@ metadata:
     author: Patil
     year: 2017
     doi: 10.3847/1538-4357/aa63e7
-
-notes:
-    - The k_lower and k_upper values are calculated by assuming log binning. Not authoritative
+    notes:
+        - The k_lower and k_upper values are calculated by assuming log binning. Not authoritative
 
 data:
     delta_squared:

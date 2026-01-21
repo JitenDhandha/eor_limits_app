@@ -92,7 +92,8 @@ class MetaData:
     author: str = attr.field(validator=attr.validators.instance_of(str), default='')
     year: int = attr.field(validator=attr.validators.instance_of(int), default=0)
     doi: str = attr.field(validator=attr.validators.instance_of(str), default='')
-
+    notes: list = attr.field(validator=attr.validators.instance_of(list), default=[])
+    
 ##################################################################
 #####                     Dataset class                      #####
 ##################################################################
@@ -100,7 +101,6 @@ class MetaData:
 @attr.define
 class DataSet:
     metadata: MetaData = attr.field(validator=attr.validators.instance_of(MetaData))
-    notes: list = attr.field(validator=attr.validators.instance_of(list))
     data: Data = attr.field(validator=attr.validators.instance_of(Data))
     
 ##################################################################
@@ -121,7 +121,6 @@ def get_dataset(file_path: str) -> DataSet:
 
     return DataSet(
         metadata=MetaData(**yaml_data.get('metadata', {})),
-        notes=yaml_data.get('notes', []),
         data=Data(**yaml_data.get('data', {})),
     )
     
@@ -165,11 +164,9 @@ def get_dataset_lowest_limits(filepath: str) -> DataSet:
         if dataset.data.z_tags.size > 0:
             z_tags_L.append(dataset.data.z_tags[iz])
 
-    
     # Create new DataSet with lowest limits
     return DataSet(
         metadata=dataset.metadata,
-        notes=dataset.notes,
         data=Data(
             z=np.array(z_L, dtype=object),
             z_lower=np.array(z_lower_L, dtype=object) if z_lower_L else np.array([], dtype=object),
