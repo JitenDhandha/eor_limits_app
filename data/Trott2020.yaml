@@ -1,10 +1,9 @@
-metadata:
-    telescope: MWA
-    author: Trott
-    year: 2020
-    doi: 10.1093/mnras/staa414
-    notes:
-        - The k_lower and k_upper values are calculated by assuming linear binning. Not authoritative.
+telescope: MWA
+author: Trott
+year: 2020
+doi: 10.1093/mnras/staa414
+notes:
+    - The k_lower and k_upper values are calculated by assuming linear binning. Not authoritative.
 
 data:
     delta_squared:

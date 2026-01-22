@@ -1,8 +1,7 @@
-metadata:
-    telescope: HERA
-    author: HERA collaboration
-    year: 2023
-    doi: 10.3847/1538-4357/acaf50
+telescope: HERA
+author: HERA collaboration
+year: 2023
+doi: 10.3847/1538-4357/acaf50
 
 data:
     delta_squared:

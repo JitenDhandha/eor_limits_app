@@ -1,8 +1,7 @@
-metadata:
-    telescope: HERA
-    author: HERA collaboration
-    year: 2025
-    doi: arXiv.2511.21289
+telescope: HERA
+author: HERA collaboration
+year: 2025
+doi: arXiv.2511.21289
 
 data:
     delta_squared:

@@ -1,8 +1,7 @@
-metadata:
-    telescope: GMRT
-    author: Paciga
-    year: 2013
-    doi: 10.1093/mnras/stt753
+telescope: GMRT
+author: Paciga
+year: 2013
+doi: 10.1093/mnras/stt753
 
 data:
     delta_squared: [[6.15e4]]

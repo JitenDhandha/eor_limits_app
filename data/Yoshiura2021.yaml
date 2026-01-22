@@ -1,10 +1,9 @@
-metadata:
-    telescope: MWA
-    author: Yoshiura
-    year: 2021
-    doi: 10.1093/mnras/stab1560
-    notes:
-        - The k_lower and k_upper values are not in the paper, they came via private communication from Shintaro Yoshiura.
+telescope: MWA
+author: Yoshiura
+year: 2021
+doi: 10.1093/mnras/stab1560
+notes:
+    - The k_lower and k_upper values are not in the paper, they came via private communication from Shintaro Yoshiura.
 
 data:
     delta_squared:

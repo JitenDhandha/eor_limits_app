@@ -1,8 +1,7 @@
-metadata:
-    telescope: MWA
-    author: Dillon
-    year: 2015
-    doi: 10.1103/PhysRevD.91.123011
+telescope: MWA
+author: Dillon
+year: 2015
+doi: 10.1103/PhysRevD.91.123011
 
 data:
     delta_squared:

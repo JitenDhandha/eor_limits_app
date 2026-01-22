@@ -1,8 +1,7 @@
-metadata:
-    telescope: OVRO-LWA
-    author: Eastwood
-    year: 2019
-    doi: 10.3847/1538-3881/ab2629 
+telescope: OVRO-LWA
+author: Eastwood
+year: 2019
+doi: 10.3847/1538-3881/ab2629 
 
 data:
     delta_squared: [[1e8]]

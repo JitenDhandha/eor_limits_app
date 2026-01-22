@@ -81,18 +81,6 @@ class Data:
             raise ValueError("k, k_lower, k_upper, and delta_squared must be the same shape.")
         if (not self.z_tags.size == 0 and not self.z_tags.shape == self.z.shape):
             raise ValueError("z_tags must be the same shape as z.")
-            
-##################################################################
-#####                    Metadata class                      #####
-##################################################################
-
-@attr.define
-class MetaData:
-    telescope: str = attr.field(validator=attr.validators.instance_of(str), default='')
-    author: str = attr.field(validator=attr.validators.instance_of(str), default='')
-    year: int = attr.field(validator=attr.validators.instance_of(int), default=0)
-    doi: str = attr.field(validator=attr.validators.instance_of(str), default='')
-    notes: list = attr.field(validator=attr.validators.instance_of(list), default=[])
     
 ##################################################################
 #####                     Dataset class                      #####
@@ -100,8 +88,12 @@ class MetaData:
 
 @attr.define
 class DataSet:
-    metadata: MetaData = attr.field(validator=attr.validators.instance_of(MetaData))
-    data: Data = attr.field(validator=attr.validators.instance_of(Data))
+    telescope: str = attr.field(validator=attr.validators.instance_of(str), default='')
+    author: str = attr.field(validator=attr.validators.instance_of(str), default='')
+    year: int = attr.field(validator=attr.validators.instance_of(int), default=0)
+    doi: str = attr.field(validator=attr.validators.instance_of(str), default='')
+    notes: list = attr.field(validator=attr.validators.instance_of(list), default=[])
+    data: Data = attr.field(validator=attr.validators.instance_of(Data), default=Data())
     
 ##################################################################
 #####                    Loader function                     #####
@@ -109,7 +101,7 @@ class DataSet:
 
 def get_all_dataset_names() -> list[str]:
     
-    files = [os.path.basename(f) for f in os.listdir('data') if f.endswith('.yaml')]
+    files = [os.path.basename(f)[:-5] for f in os.listdir('data') if f.endswith('.yaml')]
     return files
 
 def get_dataset(file_path: str) -> DataSet:
@@ -120,7 +112,11 @@ def get_dataset(file_path: str) -> DataSet:
         yaml_data = yaml.safe_load(file)
 
     return DataSet(
-        metadata=MetaData(**yaml_data.get('metadata', {})),
+        telescope=yaml_data.get('telescope', ''),
+        author=yaml_data.get('author', ''),
+        year=yaml_data.get('year', 0),
+        doi=yaml_data.get('doi', ''),
+        notes=yaml_data.get('notes', []),
         data=Data(**yaml_data.get('data', {})),
     )
     
@@ -166,7 +162,11 @@ def get_dataset_lowest_limits(filepath: str) -> DataSet:
 
     # Create new DataSet with lowest limits
     return DataSet(
-        metadata=dataset.metadata,
+        telescope=dataset.telescope,
+        author=dataset.author,
+        year=dataset.year,
+        doi=dataset.doi,
+        notes=dataset.notes,
         data=Data(
             z=np.array(z_L, dtype=object),
             z_lower=np.array(z_lower_L, dtype=object) if z_lower_L else np.array([], dtype=object),

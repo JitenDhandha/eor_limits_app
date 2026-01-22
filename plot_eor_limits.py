@@ -33,7 +33,7 @@ def plot(datasets,
     else:
         # Ensure all datasets have an entry
         for data in datasets:
-            key = f'{data.metadata.author}{data.metadata.year}' if 'HERA' not in data.metadata.author else f'HERA{data.metadata.year}'
+            key = f'{data.author}{data.year}' if 'HERA' not in data.author else f'HERA{data.year}'
             if key not in plot_kwargs_dict:
                 plot_kwargs_dict[key] = {}
 
@@ -43,13 +43,12 @@ def plot(datasets,
     # Loop over datasets
     for idx, dataset in enumerate(datasets):
         
-        #Retrieve data and metadata
+        #Retrieve data
         data = dataset.data
-        meta = dataset.metadata
         y_arr = data.delta_squared
         
         # Plotting parameters 
-        key = f'{meta.author}{meta.year}' if 'HERA' not in meta.author else f'HERA{meta.year}'
+        key = f'{dataset.author}{dataset.year}' if 'HERA' not in dataset.author else f'HERA{dataset.year}'
         kwargs = plot_kwargs_dict.get(key, {})
         base_color = kwargs.get('color', base_colors[idx % len(base_colors)]) # default color
         color_gradient = _gradient_colors(base_color, len(data.z))
@@ -71,7 +70,7 @@ def plot(datasets,
             if z_range is not None and (z_vals[0] < z_range[0] or z_vals[0] > z_range[1]):
                 continue
             # Apply year range filter
-            if year_range is not None and (meta.year is not None) and (meta.year < year_range[0] or meta.year > year_range[1]):
+            if year_range is not None and (dataset.year is not None) and (dataset.year < year_range[0] or dataset.year > year_range[1]):
                 continue
             # Apply k range filter
             if k_range is not None:
@@ -110,7 +109,7 @@ def plot(datasets,
             line_kwargs = kwargs.get('line', dict(shape='linear')) # default line
             marker_kwargs['color'] = color # color set separately
             line_kwargs['color'] = color # color set separately
-            label = f'{meta.telescope} ({meta.author}, {meta.year}), z={z_vals[0]} {z_tag_val}'
+            label = f'{dataset.telescope} ({dataset.author}, {dataset.year}), z={z_vals[0]} {z_tag_val}'
             
             # Plot type
             if plot_type == 'line':

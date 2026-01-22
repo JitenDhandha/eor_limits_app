@@ -1,8 +1,7 @@
-metadata:
-    telescope: NenuFAR
-    author: Munshi
-    year: 2025
-    doi: 10.1093/mnras/staf1386
+telescope: NenuFAR
+author: Munshi
+year: 2025
+doi: 10.1093/mnras/staf1386
 
 data:
     delta_squared: [[4.6e5, 1.8e6, 5.6e6, 1.5e7, 3.7e7, 4.9e7],

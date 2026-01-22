@@ -1,8 +1,7 @@
-metadata:
-    telescope: LOFAR
-    author: Mertens
-    year: 2025
-    doi: 10.1051/0004-6361/202554158 
+telescope: LOFAR
+author: Mertens
+year: 2025
+doi: 10.1051/0004-6361/202554158 
 
 data:
     delta_squared:
