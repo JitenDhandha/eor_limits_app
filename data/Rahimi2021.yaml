@@ -1,10 +1,9 @@
-metadata:
-    telescope: MWA
-    author: Rahimi
-    year: 2021
-    doi: 10.1093/mnras/stab2918
-    notes:
-        - The k_lower and k_upper values are not in the paper, they came via private communication from Mahsa Rahimi.
+telescope: MWA
+author: Rahimi
+year: 2021
+doi: 10.1093/mnras/stab2918
+notes:
+    - The k_lower and k_upper values are not in the paper, they came via private communication from Mahsa Rahimi.
 
 data:
     delta_squared:

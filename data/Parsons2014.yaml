@@ -1,8 +1,7 @@
-metadata:
-    telescope: PAPER
-    author: Parsons
-    year: 2014
-    doi: 10.1088/0004-637X/788/2/106 
+telescope: PAPER
+author: Parsons
+year: 2014
+doi: 10.1088/0004-637X/788/2/106 
 
 data:
     delta_squared: [[41**2]]

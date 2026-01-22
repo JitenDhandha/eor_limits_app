@@ -1,8 +1,7 @@
-metadata:
-    telescope: MWA
-    author: Ewall-Wice
-    year: 2016
-    doi: 10.1093/mnras/stw1022
+telescope: MWA
+author: Ewall-Wice
+year: 2016
+doi: 10.1093/mnras/stw1022
 
 data:
     delta_squared:

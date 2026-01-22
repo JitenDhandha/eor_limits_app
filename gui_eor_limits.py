@@ -1,4 +1,3 @@
-import os
 import streamlit as st
 import pandas as pd
 import plot_eor_limits
@@ -64,9 +63,9 @@ the view by double-clicking on the plot area. Hovering over data points will sho
     df_data = []
     for d in datasets:
         df_data.append({
-            'fname': f'{d.metadata.author}{d.metadata.year}' if 'HERA' not in d.metadata.author else f'HERA{d.metadata.year}',
-            'telescope': d.metadata.telescope,
-            'year': d.metadata.year,
+            'fname': f'{d.author}{d.year}' if 'HERA' not in d.author else f'HERA{d.year}',
+            'telescope': d.telescope,
+            'year': d.year,
             'dataset': d,
             'checkbox': None  # Will be populated later with Streamlit checkbox objects
         })
