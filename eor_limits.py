@@ -109,7 +109,7 @@ class DataSet:
 
 def get_all_dataset_names() -> list[str]:
     
-    files = [f[:-5] for f in os.listdir('data') if f.endswith('.yaml')]
+    files = [os.path.basename(f) for f in os.listdir('data') if f.endswith('.yaml')]
     return files
 
 def get_dataset(file_path: str) -> DataSet:
