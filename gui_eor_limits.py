@@ -8,9 +8,9 @@ import eor_limits
 def load_datasets(lowest_only):
     fnames = eor_limits.get_all_dataset_names()
     if lowest_only:
-        return [eor_limits.get_dataset(fname) for fname in fnames]
-    else:
         return [eor_limits.get_dataset_lowest_limits(fname) for fname in fnames]
+    else:
+        return [eor_limits.get_dataset(fname) for fname in fnames]
 
 def main():
     
