@@ -4,6 +4,4 @@ numpy
 pandas
 plotly
 PyYAML
-PyYAML
-streamlit
-altair<5
+streamlit>=1.48.1
