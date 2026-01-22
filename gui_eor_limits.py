@@ -1,25 +1,16 @@
 import os
 import streamlit as st
+import pandas as pd
 import plot_eor_limits
 import eor_limits
 
 @st.cache_data
 def load_datasets(lowest_only):
-    yaml_files = [os.path.basename(f) for f in os.listdir('data') if f.endswith('.yaml')]
-    datasets = {}
-    for fname in yaml_files:
-        try:
-            if lowest_only:
-                dataset = eor_limits.get_dataset_lowest_limits(fname)
-            else:
-                dataset = eor_limits.get_dataset(fname)
-            telescope = getattr(dataset.metadata, 'telescope', None)
-            if telescope not in datasets:
-                datasets[telescope] = []
-            datasets[telescope].append((fname, dataset))
-        except Exception as e:
-            st.warning(f"Failed to load {fname}: {e}")
-    return datasets
+    fnames = eor_limits.get_all_dataset_names()
+    if lowest_only:
+        return [eor_limits.get_dataset(fname) for fname in fnames]
+    else:
+        return [eor_limits.get_dataset_lowest_limits(fname) for fname in fnames]
 
 def main():
     
@@ -65,30 +56,29 @@ the view by double-clicking on the plot area. Hovering over data points will sho
             log_k_range = st.slider("log(k) range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1, key="k_range")
             year_range = st.slider("year range", min_value=2010, max_value=2030, value=(2010,2030), step=1, key="year_range")
 
-    dataset_all = load_datasets(False)
-    dataset_lowest = load_datasets(True)
-    datasets = dataset_lowest if lowest_only else dataset_all
-    # Sidebar controls for dataset selection
-    selected = {}
+    # Load datasets
+    dataset_raw = load_datasets(lowest_only=False)
+    dataset_lowest = load_datasets(lowest_only=True)
+    datasets = dataset_lowest if lowest_only else dataset_raw
+    # Create a pandas DataFrame with 1) fname, 2) telescope, 3) year, 4) dataset, 5) checkbox object
+    df_data = []
+    for d in datasets:
+        df_data.append({
+            'fname': f'{d.metadata.author}{d.metadata.year}' if 'HERA' not in d.metadata.author else f'HERA{d.metadata.year}',
+            'telescope': d.metadata.telescope,
+            'year': d.metadata.year,
+            'dataset': d,
+            'checkbox': None  # Will be populated later with Streamlit checkbox objects
+        })
+    # Order by telescope then year
+    df_datasets = pd.DataFrame(df_data).sort_values(by=['telescope', 'year'])
+    # Display checkboxes in sidebar ordered by telescope and year
     with st.sidebar:
-        #st.markdown("**Select Datasets**")
-        all_keys = []
-        dataset_info = []
-        for telescope, dslist in datasets.items():
-            sorted_dslist = sorted(dslist, key=lambda tup: getattr(tup[1].metadata, 'year', 0) or 0)
-            for fname, dataset in sorted_dslist:
-                key = f"{telescope}_{fname}"
-                all_keys.append(key)
-                dataset_info.append((telescope, fname, dataset, key))
-        #select_all = st.checkbox("Select/Deselect All", value=False, key="select_all")
-        for telescope in datasets.keys():
+        for telescope in df_datasets['telescope'].unique():
             st.markdown(f"*{telescope}*")
-            dslist = [info for info in dataset_info if info[0] == telescope]
-            for _, fname, dataset, key in dslist:
-                checked = st.checkbox(fname, key=key, value=False)
-                if checked:
-                    selected[key] = (dataset, fname)
-
+            for idx, row in df_datasets[df_datasets['telescope'] == telescope].iterrows():
+                df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=False)
+            
     plot_kwargs_code = st.text_area("plot_kwargs_dict: Python dict of dicts, keys are dataset identifiers, values are Plotly marker/line dicts", "{}", 
                                     help="e.g. {'HERA2025': {'marker': {'symbol': 'star', 'size': 4}, 'line': {'shape': 'hvh'}, 'color': 'green'}}",
                                     key="plot_kwargs_dict")
@@ -99,9 +89,8 @@ the view by double-clicking on the plot area. Hovering over data points will sho
         plot_kwargs_dict = {}
 
     with cont_plot:
-        datasets_to_plot = [dataset for dataset, fname in selected.values()]
         fig = plot_eor_limits.plot(
-            datasets_to_plot,
+            [row['dataset'] for idx, row in df_datasets.iterrows() if row['checkbox']],
             plot_type=plot_type,
             x_axis=x_axis,
             x_axis_log=x_axis_log,
