@@ -74,10 +74,11 @@ the view by double-clicking on the plot area. Hovering over data points will sho
     df_datasets = pd.DataFrame(df_data).sort_values(by=['telescope', 'year'])
     # Display checkboxes in sidebar ordered by telescope and year
     with st.sidebar:
+        select_all = st.checkbox("Select/Deselect all")
         for telescope in df_datasets['telescope'].unique():
             st.markdown(f"*{telescope}*")
             for idx, row in df_datasets[df_datasets['telescope'] == telescope].iterrows():
-                df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=False)
+                df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=select_all)
             
     plot_kwargs_code = st.text_area("plot_kwargs_dict: Python dict of dicts, keys are dataset identifiers, values are Plotly marker/line dicts", "{}", 
                                     help="e.g. {'HERA2025': {'marker': {'symbol': 'star', 'size': 4}, 'line': {'shape': 'hvh'}, 'color': 'green'}}",
