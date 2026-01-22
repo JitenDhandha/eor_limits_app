@@ -89,18 +89,14 @@ the view by double-clicking on the plot area. Hovering over data points will sho
                 if checked:
                     selected[key] = (dataset, fname)
 
-    plot_kwargs_code = st.text_area("plot_kwargs_list (Python list of dicts, one per selected dataset)", "None", key="plot_kwargs_list")
+    plot_kwargs_code = st.text_area("plot_kwargs_dict: Python dict of dicts, keys are dataset identifiers, values are Plotly marker/line dicts", "{}", 
+                                    help="e.g. {'HERA2025': {'marker': {'symbol': 'star', 'size': 4}, 'line': {'shape': 'hvh'}, 'color': 'green'}}",
+                                    key="plot_kwargs_dict")
     try:
-        plot_kwargs_list = eval(plot_kwargs_code, {"__builtins__": {}})
-        if plot_kwargs_list is None:
-            pass
-        elif not isinstance(plot_kwargs_list, list):
-            raise ValueError("Not a list")
-        else:
-            if len(plot_kwargs_list) != len(selected):
-                st.warning(f"Number of plot_kwargs dicts ({len(plot_kwargs_list)}) does not match number of selected datasets ({len(selected)}).")
+        plot_kwargs_dict = eval(plot_kwargs_code, {"__builtins__": {}})
     except Exception as e:
-        st.warning(f"Invalid plot_kwargs_list: {e}")
+        st.warning(f"Invalid plot_kwargs_dict: {e}")
+        plot_kwargs_dict = {}
 
     with cont_plot:
         datasets_to_plot = [dataset for dataset, fname in selected.values()]
@@ -113,7 +109,7 @@ the view by double-clicking on the plot area. Hovering over data points will sho
             z_range=z_range,
             k_range=(10**log_k_range[0], 10**log_k_range[1]),
             year_range=year_range,
-            plot_kwargs_list=plot_kwargs_list
+            plot_kwargs_dict=plot_kwargs_dict
         )
         st.plotly_chart(fig, use_container_width=True)
 

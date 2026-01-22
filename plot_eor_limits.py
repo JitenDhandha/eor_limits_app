@@ -20,18 +20,22 @@ def plot(datasets,
         z_range = None,
         k_range = None,
         year_range = None,
-        plot_kwargs_list = None):
+        plot_kwargs_dict = {}):
     """
     Plot multiple datasets on the same figure.
     datasets: list of dataset objects
-    plot_kwargs_list: list of dicts, one per dataset
+    plot_kwargs_dict: dict of dicts, keys are dataset identifiers, values are Plotly marker/line dicts
     """
     if not isinstance(datasets, (list, tuple)):
         datasets = [datasets]
-    if plot_kwargs_list is None:
-        plot_kwargs_list = [{} for _ in datasets]
-    if len(plot_kwargs_list) != len(datasets):
-        raise ValueError("plot_kwargs_list must be a list of dicts, one per dataset.")
+    if not isinstance(plot_kwargs_dict, dict):
+        raise ValueError("plot_kwargs_dict must be a dict.")
+    else:
+        # Ensure all datasets have an entry
+        for data in datasets:
+            key = f'{data.metadata.author}{data.metadata.year}' if 'HERA' not in data.metadata.author else f'HERA{data.metadata.year}'
+            if key not in plot_kwargs_dict:
+                plot_kwargs_dict[key] = {}
 
     fig = go.Figure()
     base_colors = px.colors.qualitative.Plotly
@@ -45,8 +49,9 @@ def plot(datasets,
         y_arr = data.delta_squared
         
         # Plotting parameters 
-        kwargs = plot_kwargs_list[idx]
-        base_color = kwargs.get('color', base_colors[idx % len(base_colors)])
+        key = f'{meta.author}{meta.year}' if 'HERA' not in meta.author else f'HERA{meta.year}'
+        kwargs = plot_kwargs_dict.get(key, {})
+        base_color = kwargs.get('color', base_colors[idx % len(base_colors)]) # default color
         color_gradient = _gradient_colors(base_color, len(data.z))
         
         # Loop over redshifts
@@ -101,9 +106,11 @@ def plot(datasets,
                 
             # Plotting label and style
             color = color_gradient[iz]
-            label = kwargs.pop('label', f'{meta.telescope} ({meta.author}, {meta.year}), z={z_vals[0]} {z_tag_val}')
-            marker_kwargs = kwargs.pop('marker', dict(color=color,symbol="triangle-down",size=7,)) # default marker
-            line_kwargs = kwargs.pop('line', dict(color=color)) # default line
+            marker_kwargs = kwargs.get('marker', dict(symbol='triangle-down',size=7,)) # default marker
+            line_kwargs = kwargs.get('line', dict(shape='linear')) # default line
+            marker_kwargs['color'] = color # color set separately
+            line_kwargs['color'] = color # color set separately
+            label = f'{meta.telescope} ({meta.author}, {meta.year}), z={z_vals[0]} {z_tag_val}'
             
             # Plot type
             if plot_type == 'line':
@@ -118,8 +125,7 @@ def plot(datasets,
                         error_x=error_x,
                         name=label,
                         marker=marker_kwargs,
-                        line=line_kwargs,
-                        **{k:v for k,v in kwargs.items()})
+                        line=line_kwargs)
                         )
     
     fig.update_layout(
