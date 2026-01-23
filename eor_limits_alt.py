@@ -139,6 +139,44 @@ def get_dataset(fname: str) -> DataSet:
         )
     
 # WARNING: This might be over-estimating the lowest limit, if the lowest k-bin is erroneously low.
-def get_dataset_lowest_limits(filepath: str) -> DataSet:
+def get_dataset_lowest_limits(fname: str) -> DataSet:
+
+    dataset = get_dataset(fname)
     
-    raise NotImplementedError("This function is not implemented yet in eor_limits_alt.py")
+    # For all unique z values, find the lowest limit
+    z_L, k_L, dsq_L, k_lower_L, k_upper_L, z_lower_L, z_upper_L, z_tags_L = [], [], [], [], [], [], [], []
+    unique_z = dataset.data['z'].unique()
+    for z_val in unique_z:
+        subset = dataset.data[dataset.data['z'] == z_val]
+        min_dsq = np.inf
+        min_row = None
+        for _, row in subset.iterrows():
+            ik = np.nanargmin(row['delta_squared'])
+            curr_dsq = np.nanmin(row['delta_squared'])
+            if curr_dsq < min_dsq:
+                min_dsq = curr_dsq
+                min_row = (row, ik)
+        if min_row is not None:
+            row, ik = min_row
+            z_L.append(row['z'])
+            k_L.append(row['k'][ik])
+            dsq_L.append(row['delta_squared'][ik])
+            k_lower_L.append(row['k_lower'][ik] if not pd.isna(row['k_lower']).all() else np.nan)
+            k_upper_L.append(row['k_upper'][ik] if not pd.isna(row['k_upper']).all() else np.nan)
+            z_lower_L.append(row['z_lower'] if not pd.isna(row['z_lower']) else np.nan)
+            z_upper_L.append(row['z_upper'] if not pd.isna(row['z_upper']) else np.nan)
+            z_tags_L.append(row['z_tags'] if row['z_tags'] != '' else '')
+        
+    # Create new DataFrame
+    dataset.data = pd.DataFrame({
+        'z': z_L,
+        'z_lower': z_lower_L,
+        'z_upper': z_upper_L,
+        'z_tags': z_tags_L,
+        'k': k_L,
+        'k_lower': k_lower_L,
+        'k_upper': k_upper_L,
+        'delta_squared': dsq_L
+        })
+    
+    return dataset
