@@ -10,9 +10,6 @@ import os
 def check_is_empty(arr):
     return (arr is [] or arr is None or arr is np.array([], dtype=object) or arr is np.array(None, dtype=object))
 
-def check_is_allowed(arr, allowed_types):
-    return check_is_empty(arr) or all(isinstance(x, allowed_types) for x in arr)
-
 def convert_to_empty(arr):
     return np.array([], dtype=object) if check_is_empty(arr) else np.array(arr, dtype=object)
 
@@ -60,16 +57,16 @@ class Data:
     delta_squared: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
     
     def __attrs_post_init__(self):
-        # Check dimensionality
+        # Check type and dimensionality
         for attr_name in ['z', 'z_lower', 'z_upper']:
             arr = getattr(self, attr_name)
-            if not check_is_allowed(arr, (int, float)):
+            if not all(isinstance(x, (int, float)) for x in arr):
                 raise ValueError(f"{attr_name} must be a 1D array of numbers.")
         for attr_name in ['k', 'k_lower', 'k_upper', 'delta_squared']:
             arr = getattr(self, attr_name)
-            if not check_is_allowed(arr, (list, np.ndarray)):
+            if not all(isinstance(x, (list, np.ndarray)) for x in arr):
                 raise ValueError(f"{attr_name} must be a 2D array of numbers.")
-        if not check_is_allowed(self.z_tags, str):
+        if not all(isinstance(x, str) for x in self.z_tags):
             raise ValueError("z_tags must be a 1D array of strings.")
         # Check sizes
         if (not self.z_lower.size == 0 and not self.z_lower.shape == self.z.shape) or \
