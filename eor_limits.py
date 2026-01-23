@@ -4,19 +4,16 @@ import yaml
 import os
 
 ##################################################################
-#####                  Validator functions                   #####
+#####                  Converter functions                   #####
 ##################################################################
 
-def check_is_empty(arr):
-    return (arr is [] or arr is None or arr is np.array([], dtype=object) or arr is np.array(None, dtype=object))
+def to_empty(arr):
+    if arr is [] or arr is None or arr is np.array([], dtype=object) or arr is np.array(None, dtype=object):
+        return np.array([], dtype=object)
+    else:
+        return np.array(arr, dtype=object)
 
-def convert_to_empty(arr):
-    return np.array([], dtype=object) if check_is_empty(arr) else np.array(arr, dtype=object)
-
-def convert_to_empty_and_eval(arr):
-    
-    # Convert to empty array if needed
-    arr = convert_to_empty(arr)
+def to_eval(arr):
     
     # Eval an item. Allows for "21**2" type expressions
     def eval_item(item):
@@ -35,10 +32,9 @@ def convert_to_empty_and_eval(arr):
             return [process_list(x) for x in lst]
         else:
             return eval_item(lst)
-    processed = process_list(arr)
+    processed_arr = process_list(arr)
     
-    return np.array(processed, dtype=object)
-
+    return np.array(processed_arr, dtype=object)
 
 ##################################################################
 #####                      Data class                        #####
@@ -47,37 +43,65 @@ def convert_to_empty_and_eval(arr):
 @attr.define
 class Data:
     
-    z: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
-    z_lower: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
-    z_upper: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
-    z_tags: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty)
-    k: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
-    k_lower: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
-    k_upper: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
-    delta_squared: np.ndarray = attr.field(default=np.array([], dtype=object), converter=convert_to_empty_and_eval)
-    
-    def __attrs_post_init__(self):
-        # Check type and dimensionality
-        for attr_name in ['z', 'z_lower', 'z_upper']:
-            arr = getattr(self, attr_name)
-            if not all(isinstance(x, (int, float)) for x in arr):
-                raise ValueError(f"{attr_name} must be a 1D array of numbers.")
-        for attr_name in ['k', 'k_lower', 'k_upper', 'delta_squared']:
-            arr = getattr(self, attr_name)
-            if not all(isinstance(x, (list, np.ndarray)) for x in arr):
-                raise ValueError(f"{attr_name} must be a 2D array of numbers.")
-        if not all(isinstance(x, str) for x in self.z_tags):
+    z: np.ndarray = attr.field(default=np.array([], dtype=object), converter=[to_empty, to_eval])
+    @z.validator
+    def check_z(self, attribute, value):
+        if not all(isinstance(x, (int, float)) for x in value):
+            raise ValueError("z must be a 1D array of numbers.")
+        
+    z_lower: np.ndarray = attr.field(default=np.array([], dtype=object), converter=[to_empty, to_eval])
+    @z_lower.validator
+    def check_z_lower(self, attribute, value):
+        if not all(isinstance(x, (int, float)) for x in value):
+            raise ValueError("z_lower must be a 1D array of numbers.")
+        if value.size != 0 and not value.shape == self.z.shape:
+            raise ValueError("z_lower must be the same shape as z.")
+        
+    z_upper: np.ndarray = attr.field(default=np.array([], dtype=object), converter=[to_empty, to_eval])
+    @z_upper.validator
+    def check_z_upper(self, attribute, value):
+        if not all(isinstance(x, (int, float)) for x in value):
+            raise ValueError("z_upper must be a 1D array of numbers.")
+        if value.size != 0 and not value.shape == self.z.shape:
+            raise ValueError("z_upper must be the same shape as z.")
+        
+    z_tags: np.ndarray = attr.field(default=np.array([], dtype=object), converter=to_empty)
+    @z_tags.validator
+    def check_z_tags(self, attribute, value):
+        if not all(isinstance(x, str) for x in value):
             raise ValueError("z_tags must be a 1D array of strings.")
-        # Check sizes
-        if (not self.z_lower.size == 0 and not self.z_lower.shape == self.z.shape) or \
-            (not self.z_upper.size == 0 and not self.z_upper.shape == self.z.shape):
-            raise ValueError("z_lower and z_upper must be the same shape as z.")
-        if (not self.k_lower.size == 0 and not self.k_lower.shape == self.k.shape) or \
-            (not self.k_upper.size == 0 and not self.k_upper.shape == self.k.shape) or \
-            (not self.delta_squared.shape == self.k.shape):
-            raise ValueError("k, k_lower, k_upper, and delta_squared must be the same shape.")
-        if (not self.z_tags.size == 0 and not self.z_tags.shape == self.z.shape):
+        if value.size != 0 and not value.shape == self.z.shape:
             raise ValueError("z_tags must be the same shape as z.")
+        
+    k: np.ndarray = attr.field(default=np.array([], dtype=object), converter=[to_empty, to_eval])
+    @k.validator
+    def check_k(self, attribute, value):
+        if not all(isinstance(x, (list, np.ndarray)) for x in value):
+            raise ValueError("k must be a 2D array of numbers.")
+    
+    k_lower: np.ndarray = attr.field(default=np.array([], dtype=object), converter=[to_empty, to_eval])
+    @k_lower.validator
+    def check_k_lower(self, attribute, value):
+        if not all(isinstance(x, (list, np.ndarray)) for x in value):
+            raise ValueError("k_lower must be a 2D array of numbers.")
+        if value.size != 0 and not value.shape == self.k.shape:
+            raise ValueError("k_lower must be the same shape as k.")
+    
+    k_upper: np.ndarray = attr.field(default=np.array([], dtype=object), converter=[to_empty, to_eval])
+    @k_upper.validator
+    def check_k_upper(self, attribute, value):
+        if not all(isinstance(x, (list, np.ndarray)) for x in value):
+            raise ValueError("k_upper must be a 2D array of numbers.")
+        if value.size != 0 and not value.shape == self.k.shape:
+            raise ValueError("k_upper must be the same shape as k.")
+        
+    delta_squared: np.ndarray = attr.field(default=np.array([], dtype=object), converter=[to_empty, to_eval])
+    @delta_squared.validator
+    def check_delta_squared(self, attribute, value):
+        if not all(isinstance(x, (list, np.ndarray)) for x in value):
+            raise ValueError("delta_squared must be a 2D array of numbers.")
+        if not value.shape == self.k.shape:
+            raise ValueError("delta_squared must be the same shape as k.")
     
 ##################################################################
 #####                     Dataset class                      #####
@@ -85,12 +109,12 @@ class Data:
 
 @attr.define
 class DataSet:
-    telescope: str = attr.field(validator=attr.validators.instance_of(str), default='')
-    author: str = attr.field(validator=attr.validators.instance_of(str), default='')
-    year: int = attr.field(validator=attr.validators.instance_of(int), default=0)
-    doi: str = attr.field(validator=attr.validators.instance_of(str), default='')
-    notes: list = attr.field(validator=attr.validators.instance_of(list), default=[])
-    data: Data = attr.field(validator=attr.validators.instance_of(Data), default=Data())
+    telescope: str = attr.field(default='', validator=attr.validators.instance_of(str))
+    author: str = attr.field(default='', validator=attr.validators.instance_of(str))
+    year: int = attr.field(default=0, validator=attr.validators.instance_of(int))
+    doi: str = attr.field(default='', validator=attr.validators.instance_of(str))
+    notes: list = attr.field(default=[], validator=attr.validators.instance_of(list))
+    data: Data = attr.field(default=Data(), validator=attr.validators.instance_of(Data))
     
 ##################################################################
 #####                    Loader function                     #####
