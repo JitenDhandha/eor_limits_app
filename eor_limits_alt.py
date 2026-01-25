@@ -116,12 +116,34 @@ class DataSet:
     notes: list = attr.field(default=[], validator=attr.validators.instance_of(list))
     data: pd.DataFrame = attr.field(default=pd.DataFrame(), converter=to_pandas_df, 
                                     validator=attr.validators.instance_of(pd.DataFrame))
+    
+    def __str__(self) -> str:
+        text = f"DataSet: telescope={self.telescope}, author={self.author}, year={self.year}, doi={self.doi}"
+        if self.notes:
+            text += ",\nnotes=["
+            text += ",\n       ".join(self.notes)
+            text += "]"
+        text += ",\ndata=\n"
+        text += str(self.data)
+        text += "\n"
+        return text
+    
+    def __repr__(self) -> str:
+        return self.__str__()
+    
+def get_all_dataset_names() -> list[str]:
+    
+    files = [os.path.basename(f)[:-5] for f in os.listdir('data') if f.endswith('.yaml')]
+    return files
 
 def get_dataset(fname: str) -> DataSet:
 
-    file_path = 'data/' + fname
-    file_path = file_path + '.yaml' if not file_path.endswith('.yaml') else file_path
-    with open(file_path, 'r') as file:
+    fname = fname[:-5] if fname.endswith('.yaml') else fname
+    if fname in get_all_dataset_names():
+        pass
+    else:
+        raise ValueError(f"Dataset '{fname}' not found. Available datasets: {get_all_dataset_names()}")
+    with open('data/' + fname + '.yaml', 'r') as file:
         yaml_data = yaml.safe_load(file)
         
     # Process and validate data
