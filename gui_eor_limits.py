@@ -13,84 +13,93 @@ def load_datasets(lowest_only):
 
 def main():
     
-    st.title("21-cm Power Spectrum Limits Plotter")
-    st.set_page_config(page_title="21-cm Power Spectrum Limits Plotter")
-    st.text(
-    """\
-This is an interactive tool to visualize published 21-cm power spectrum limits from various experiments. \
-You can select datasets from the sidebar (collapsible on the top left corner of the page), choose plotting \
-options, and customize the appearance of the plots. \
-The datasets are sourced from the 'eor_limits' Python package, which provides a standardized interface \
-to access these limits.
-
-Note that for each dataset, the limits are grouped by redshift. For datasets containing multiple fields or \
-polarizations at the same redshift, they are treated as separate redshift entries.
+    # Page configuration
+    st.set_page_config(page_title="21-cm Power Spectrum Limits Plotter", 
+                       page_icon="📡",
+                       layout='wide')
+    
+    # Title and description
+    st.markdown(f"<div style='text-align: right; font-size: 12px;'>Last updated: 25 January, 2026</div>", unsafe_allow_html=True)
+    st.title("📡 21-cm Power Spectrum Limits Plotter")
+    st.markdown(
     """
-    )
+    _An interactive tool to visualize published 21-cm power spectrum limits from interferometric experiments_ 
+    """)
+    #
     st.info(
-    """\
-Pro tips: You can click on a legend item to toggle its visibility. Double-clicking a legend item will isolate it. \
-Furthermore, you can zoom into a specific region of the plot by clicking and dragging your mouse, or reset \
-the view by double-clicking on the plot area. Hovering over data points will show detailed information about that point.
+    """
+    - **How to use**: Select datasets from the sidebar, collapsible on the top left corner of the page, and customize from various plotting options!
+    - **Pro tips**: Hover over the data points to see more information. Click on legend items to toggle visibility. Double-click to isolate.
+    - **Note**: Limits are grouped by redshift. Datasets containing multiple fields or polarizations at the same redshift are treated as separate entries.
     """
     )
     
-    # Container for the plot first
-    cont_plot = st.container()
-
-    # Columns for plot controls
-    with st.container():
-        cols = st.columns(2)
-        with cols[0]:
-            plot_type = st.selectbox("Plot type", ["line", "scatter"], key="plot_type")
-            x_axis = st.selectbox("X axis", ["k", "z"], key="x_axis")
-            cols2 = st.columns(2)
-            with cols2[0]:
-                x_axis_errors = st.checkbox("Show x axis errors", value=True, key="x_axis_errors")
-            with cols2[1]:
-                x_axis_log = st.checkbox("Log x axis", value=False, key="x_axis_log")
-            lowest_only = st.checkbox("Show only lowest limit per z", value=False, key="lowest_only")
-        with cols[1]:
-            z_range = st.slider("z range", min_value=5.0, max_value=30.0, value=(5.0,30.0), step=0.1, key="z_range")
-            log_k_range = st.slider("log(k) range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1, key="k_range")
-            year_range = st.slider("year range", min_value=2010, max_value=2030, value=(2010,2030), step=1, key="year_range")
-
     # Load datasets
     dataset_raw = load_datasets(lowest_only=False)
     dataset_lowest = load_datasets(lowest_only=True)
-    datasets = dataset_lowest if lowest_only else dataset_raw
-    # Create a pandas DataFrame with 1) fname, 2) telescope, 3) year, 4) dataset, 5) checkbox object
+    
+    # Create a pandas DataFrame with 1) telescope, 2) author, 3) year, 4) dataset
     df_data = []
-    for d in datasets:
+    for draw, dlowest in zip(dataset_raw, dataset_lowest):
         df_data.append({
-            'fname': f'{d.author}{d.year}' if 'HERA' not in d.author else f'HERA{d.year}',
-            'telescope': d.telescope,
-            'year': d.year,
-            'dataset': d,
-            'checkbox': None  # Will be populated later with Streamlit checkbox objects
+            'fname': f"{draw.author}{draw.year}" if 'HERA' not in draw.author else f'HERA{draw.year}',
+            'telescope': draw.telescope,
+            'year': draw.year,
+            'dataset_raw': draw,
+            'dataset_lowest': dlowest,
+            'checkbox': None, # Placeholder for checkbox state (to be filled later)
         })
     # Order by telescope then year
     df_datasets = pd.DataFrame(df_data).sort_values(by=['telescope', 'year'])
-    # Display checkboxes in sidebar ordered by telescope and year
+        
+    # Sidebar for dataset selection
     with st.sidebar:
         select_all = st.checkbox("Select/Deselect all")
         for telescope in df_datasets['telescope'].unique():
             st.markdown(f"*{telescope}*")
             for idx, row in df_datasets[df_datasets['telescope'] == telescope].iterrows():
                 df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=select_all)
-            
-    plot_kwargs_code = st.text_area("plot_kwargs_dict: Python dict of dicts, keys are dataset identifiers, values are Plotly marker/line dicts", "{}", 
-                                    help="e.g. {'HERA2025': {'marker': {'symbol': 'star', 'size': 4}, 'line': {'shape': 'hvh'}, 'color': 'green'}}",
-                                    key="plot_kwargs_dict")
-    try:
-        plot_kwargs_dict = eval(plot_kwargs_code, {"__builtins__": {}})
-    except Exception as e:
-        st.warning(f"Invalid plot_kwargs_dict: {e}")
-        plot_kwargs_dict = {}
-
+    
+    # Two columns: left for options, right for plot
+    columns = st.columns([1,3])
+    bottom_left_cell = columns[0].container(border=True, height="stretch", vertical_alignment="center")
+    cont_plot = columns[1].container(border=True, height="stretch", vertical_alignment="center")
+    
+    # Options area
+    with bottom_left_cell:
+        plot_type = st.radio(
+            "Plot type:", 
+            options=['line', 'scatter'],
+            format_func=lambda x: 'Line plot' if x=='line' else 'Scatter plot',
+        )
+        x_axis = st.radio(
+            "$x$ axis:", 
+            options=['k', 'z'],
+            format_func=lambda x: 'Wavenumber $k$' if x=='k' else 'Redshift $z$',
+        )
+        x_axis_errors = st.toggle("Show $x$ axis error bars", value=False)
+        x_axis_log = st.toggle("Logarithmic $x$ axis", value=(x_axis=='k'))
+        lowest_only = st.toggle("Show only lowest limits per $z$-bin", value=False)
+        z_range = st.slider("$z$ range", min_value=5.0, max_value=30.0, value=(5.0,30.0), step=0.1)
+        log_k_range = st.slider("$\log(k)$ range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1)
+        year_range = st.slider("Year range", min_value=2010, max_value=2030, value=(2010,2030), step=1)
+        
+    # Custom plot kwargs (needed first for plot_kwargs_dict to be defined)
+    with st.expander("Customize plot appearance"):
+        st.markdown("Provide a Python dictionary to customize the appearance of each dataset. \
+                    The keys should be the dataset identifiers (e.g. `'HERA2025'`), and the values should be dictionaries containing Plotly marker/line properties. \
+                    e.g. `{'HERA2025': {'marker': {'symbol': 'star', 'size': 4}, 'line': {'shape': 'hvh'}, 'color': 'green'}}`")
+        plot_kwargs_code = st.text_area("plot_kwargs_dict:", "{}")
+        try:
+            plot_kwargs_dict = eval(plot_kwargs_code, {"__builtins__": {}})
+        except Exception as e:
+            st.warning(f"Invalid plot_kwargs_dict: {e}")
+            plot_kwargs_dict = {}
+    
+    # Plot area
     with cont_plot:
         fig = plot_eor_limits.plot(
-            [row['dataset'] for idx, row in df_datasets.iterrows() if row['checkbox']],
+            [row['dataset_lowest' if lowest_only else 'dataset_raw'] for idx, row in df_datasets.iterrows() if row['checkbox']],
             plot_type=plot_type,
             x_axis=x_axis,
             x_axis_log=x_axis_log,
@@ -100,7 +109,15 @@ the view by double-clicking on the plot area. Hovering over data points will sho
             year_range=year_range,
             plot_kwargs_dict=plot_kwargs_dict
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch", height="stretch")
 
+    # Show raw data
+    with st.expander("Show raw data of selected datasets"):
+        for idx, row in df_datasets.iterrows():
+            if row['checkbox']:
+                st.markdown(f"**{row['fname']}**")
+                st.dataframe(row['dataset_lowest' if lowest_only else 'dataset_raw'].data)
+            
+        
 if __name__ == "__main__":
     main()
