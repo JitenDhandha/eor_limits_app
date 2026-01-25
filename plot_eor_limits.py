@@ -37,6 +37,7 @@ def plot(datasets,
             if key not in plot_kwargs_dict:
                 plot_kwargs_dict[key] = {}
 
+    # Make square figure
     fig = go.Figure()
     base_colors = px.colors.qualitative.Plotly
     
@@ -105,11 +106,12 @@ def plot(datasets,
                 
             # Plotting label and style
             color = color_gradient[iz]
-            marker_kwargs = kwargs.get('marker', dict(symbol='triangle-down',size=7,)) # default marker
+            marker_kwargs = kwargs.get('marker', dict(symbol='triangle-down',size=8,)) # default marker
             line_kwargs = kwargs.get('line', dict(shape='linear')) # default line
             marker_kwargs['color'] = color # color set separately
             line_kwargs['color'] = color # color set separately
-            label = f'{dataset.telescope} ({dataset.author}, {dataset.year}), z={z_vals[0]} {z_tag_val}'
+            label = f'{dataset.author}{dataset.year}' if 'HERA' not in dataset.author else f'HERA{dataset.year}'
+            label = f'{label}, z={z_vals[0]} {z_tag_val}'
             
             # Plot type
             if plot_type == 'line':
@@ -136,5 +138,8 @@ def plot(datasets,
             type='log', exponentformat='e',
             title='Δ² [mK²]',
         ),
+        legend=dict(
+            font=dict(size=10),
+        )
     )
     return fig
