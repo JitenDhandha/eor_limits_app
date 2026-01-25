@@ -166,7 +166,7 @@ def load_dataset_lowest_limits(fname: str) -> DataSet:
     dataset = load_dataset(fname)
     
     # For all unique z values, find the lowest limit
-    z_L, k_L, dsq_L, k_lower_L, k_upper_L, z_lower_L, z_upper_L, z_tags_L = [], [], [], [], [], [], [], []
+    z_L, z_lower_L, z_upper_L, z_tags_L, k_L, k_lower_L, k_upper_L, dsq_L = [], [], [], [], [], [], [], []
     unique_z = dataset.data['z'].unique()
     for z_val in unique_z:
         subset = dataset.data[dataset.data['z'] == z_val]
@@ -181,14 +181,14 @@ def load_dataset_lowest_limits(fname: str) -> DataSet:
         if min_row is not None:
             row, ik = min_row
             z_L.append(row['z'])
-            k_L.append(row['k'][ik])
-            dsq_L.append(row['delta_squared'][ik])
-            k_lower_L.append(row['k_lower'][ik] if not pd.isna(row['k_lower']).all() else np.nan)
-            k_upper_L.append(row['k_upper'][ik] if not pd.isna(row['k_upper']).all() else np.nan)
             z_lower_L.append(row['z_lower'] if not pd.isna(row['z_lower']) else np.nan)
             z_upper_L.append(row['z_upper'] if not pd.isna(row['z_upper']) else np.nan)
             z_tags_L.append(row['z_tags'] if row['z_tags'] != '' else '')
-        
+            k_L.append([row['k'][ik]])
+            k_lower_L.append([row['k_lower'][ik]] if not pd.isna(row['k_lower']).all() else np.nan)
+            k_upper_L.append([row['k_upper'][ik]] if not pd.isna(row['k_upper']).all() else np.nan)
+            dsq_L.append([row['delta_squared'][ik]])
+
     # Create new DataFrame
     dataset.data = pd.DataFrame({
         'z': z_L,

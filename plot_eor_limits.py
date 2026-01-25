@@ -32,8 +32,8 @@ def plot(datasets,
         raise ValueError("plot_kwargs_dict must be a dict.")
     else:
         # Ensure all datasets have an entry
-        for data in datasets:
-            key = f'{data.author}{data.year}' if 'HERA' not in data.author else f'HERA{data.year}'
+        for dataset in datasets:
+            key = f'{dataset.author}{dataset.year}' if 'HERA' not in dataset.author else f'HERA{dataset.year}'
             if key not in plot_kwargs_dict:
                 plot_kwargs_dict[key] = {}
 
@@ -57,11 +57,11 @@ def plot(datasets,
         for iz in range(len(data.z)):
             
             # Get data for this redshift
-            y = np.array(y_arr[iz], dtype=float)
+            y = y_arr[iz]
             z_vals = float(data.z[iz]) * np.ones_like(y)
             z_lower_vals = data.z_lower[iz] * np.ones_like(y) if data.z_lower.size > 0 else None
             z_upper_vals = data.z_upper[iz] * np.ones_like(y) if data.z_upper.size > 0 else None
-            k_vals = np.array(data.k[iz], dtype=float)
+            k_vals = data.k[iz]
             k_upper_vals = data.k_lower[iz] if data.k_lower.size > 0 else None
             k_lower_vals = data.k_upper[iz] if data.k_upper.size > 0 else None
             z_tag_val = f'({data.z_tags[iz]})' if data.z_tags.size > 0 else ""
