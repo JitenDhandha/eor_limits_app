@@ -1,0 +1,13 @@
+[theme]
+base = "dark"
+baseFontSize = 15
+
+# General color setup
+textColor = "#e2e8f0"
+primaryColor = "#6690da"
+backgroundColor = "#1d293d"
+secondaryBackgroundColor = "#0f172b"
+
+# Widgets
+showWidgetBorder = true
+borderColor = "#ffffff"
