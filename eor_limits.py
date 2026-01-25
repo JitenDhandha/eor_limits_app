@@ -131,18 +131,18 @@ class DataSet:
     def __repr__(self) -> str:
         return self.__str__()
     
-def get_all_dataset_names() -> list[str]:
+def get_available_datasets() -> list[str]:
     
     files = [os.path.basename(f)[:-5] for f in os.listdir('data') if f.endswith('.yaml')]
     return files
 
-def get_dataset(fname: str) -> DataSet:
+def load_dataset(fname: str) -> DataSet:
 
     fname = fname[:-5] if fname.endswith('.yaml') else fname
-    if fname in get_all_dataset_names():
+    if fname in get_available_datasets():
         pass
     else:
-        raise ValueError(f"Dataset '{fname}' not found. Available datasets: {get_all_dataset_names()}")
+        raise ValueError(f"Dataset '{fname}' not found. Available datasets: {get_available_datasets()}")
     with open('data/' + fname + '.yaml', 'r') as file:
         yaml_data = yaml.safe_load(file)
         
@@ -161,9 +161,9 @@ def get_dataset(fname: str) -> DataSet:
         )
     
 # WARNING: This might be over-estimating the lowest limit, if the lowest k-bin is erroneously low.
-def get_dataset_lowest_limits(fname: str) -> DataSet:
+def load_dataset_lowest_limits(fname: str) -> DataSet:
 
-    dataset = get_dataset(fname)
+    dataset = load_dataset(fname)
     
     # For all unique z values, find the lowest limit
     z_L, k_L, dsq_L, k_lower_L, k_upper_L, z_lower_L, z_upper_L, z_tags_L = [], [], [], [], [], [], [], []

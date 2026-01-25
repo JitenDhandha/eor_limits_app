@@ -5,11 +5,11 @@ import eor_limits
 
 @st.cache_data
 def load_datasets(lowest_only):
-    fnames = eor_limits.get_all_dataset_names()
+    fnames = eor_limits.get_available_datasets()
     if lowest_only:
-        return [eor_limits.get_dataset_lowest_limits(fname) for fname in fnames]
+        return [eor_limits.load_dataset_lowest_limits(fname) for fname in fnames]
     else:
-        return [eor_limits.get_dataset(fname) for fname in fnames]
+        return [eor_limits.load_dataset(fname) for fname in fnames]
 
 def main():
     
