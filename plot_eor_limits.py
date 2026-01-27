@@ -110,8 +110,7 @@ def plot(datasets,
             line_kwargs = kwargs.get('line', dict(shape='linear')) # default line
             marker_kwargs['color'] = color # color set separately
             line_kwargs['color'] = color # color set separately
-            label = f'{dataset.author}{dataset.year}' if 'HERA' not in dataset.author else f'HERA{dataset.year}'
-            label = f'{label}, z={z_vals[0]} {z_tag_val}'
+            label = f'{key}, z={z_vals[0]} {z_tag_val}'
             
             # Plot type
             if plot_type == 'line':

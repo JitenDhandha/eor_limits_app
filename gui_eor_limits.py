@@ -19,7 +19,7 @@ def main():
                        layout='wide')
     
     # Title and description
-    st.markdown(f"<div style='text-align: right; font-size: 12px;'>Last updated: 25 January, 2026</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='text-align: right; font-size: 12px;'>Last updated: 27 January, 2026</div>", unsafe_allow_html=True)
     st.title("📡 21-cm Power Spectrum Limits Plotter")
     st.markdown(
     """
@@ -45,6 +45,7 @@ def main():
             'fname': f"{draw.author}{draw.year}" if 'HERA' not in draw.author else f'HERA{draw.year}',
             'telescope': draw.telescope,
             'year': draw.year,
+            'doi': draw.doi,
             'dataset_raw': draw,
             'dataset_lowest': dlowest,
             'checkbox': None, # Placeholder for checkbox state (to be filled later)
@@ -58,7 +59,11 @@ def main():
         for telescope in df_datasets['telescope'].unique():
             st.markdown(f"*{telescope}*")
             for idx, row in df_datasets[df_datasets['telescope'] == telescope].iterrows():
-                df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=select_all)
+                with st.container(horizontal=True, gap="xsmall"):
+                    df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=select_all)
+                    if row['doi']: # Add DOI link if available
+                        st.markdown(f"<a href='https://doi.org/{row['doi']}' target='_blank' style='text-decoration: none;'>🔗</a>", 
+                                    unsafe_allow_html=True)
     
     # Two columns: left for options, right for plot
     columns = st.columns([1,3])
