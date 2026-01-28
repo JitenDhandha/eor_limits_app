@@ -1,4 +1,4 @@
-import attr
+import attrs
 import numpy as np
 import yaml
 import os
@@ -107,15 +107,15 @@ def to_pandas_df(d: dict) -> pd.DataFrame:
 #####                     DataSet class                      #####
 ##################################################################
     
-@attr.define
+@attrs.define
 class DataSet:
-    telescope: str = attr.field(default='', validator=attr.validators.instance_of(str))
-    author: str = attr.field(default='', validator=attr.validators.instance_of(str))
-    year: int = attr.field(default=0, validator=attr.validators.instance_of(int))
-    doi: str = attr.field(default='', validator=attr.validators.instance_of(str))
-    notes: list = attr.field(default=[], validator=attr.validators.instance_of(list))
-    data: pd.DataFrame = attr.field(default=pd.DataFrame(), converter=to_pandas_df, 
-                                    validator=attr.validators.instance_of(pd.DataFrame))
+    telescope: str = attrs.field(default='', validator=attrs.validators.instance_of(str))
+    author: str = attrs.field(default='', validator=attrs.validators.instance_of(str))
+    year: int = attrs.field(default=0, validator=attrs.validators.instance_of(int))
+    doi: str = attrs.field(default='', validator=attrs.validators.instance_of(str))
+    notes: list = attrs.field(default=[], validator=attrs.validators.instance_of(list))
+    data: pd.DataFrame = attrs.field(default=pd.DataFrame(), converter=to_pandas_df, 
+                                    validator=attrs.validators.instance_of(pd.DataFrame))
     
     def __str__(self) -> str:
         text = f"DataSet: telescope={self.telescope}, author={self.author}, year={self.year}, doi={self.doi}"
