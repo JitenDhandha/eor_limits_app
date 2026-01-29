@@ -80,7 +80,6 @@ def main():
                     }])
                 ])
             except Exception as e:
-                print(e)
                 st.error(f"Failed to load dataset: {e}")
                 
         # Sort datasets by telescope and year
