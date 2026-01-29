@@ -53,7 +53,14 @@ def main():
             df_datasets = load_datasets()
         
         # Upload own dataset
-        uploaded_datasets = st.file_uploader("Upload your own dataset (YAML format)", type=['yaml'], accept_multiple_files=True)
+        uploaded_datasets = st.file_uploader("Upload your own dataset (YAML format)", type=['yaml'], 
+                                             help="""
+                                             Uploaded datasets are stored in-memory on the server for processing during your session. 
+                                             They are not saved anywhere permanently, and not accessible to any other app users. 
+                                             Only the main author (Jiten Dhandha) has access to the server logs, 
+                                             which do not display the contents of uploaded files.
+                                             """,
+                                             accept_multiple_files=True)
         for uploaded_dataset in uploaded_datasets:
             upload_data = uploaded_dataset.getvalue().decode('utf-8')
             try:
