@@ -4,12 +4,23 @@ import plot_eor_limits
 import eor_limits
 
 @st.cache_data
-def load_datasets(lowest_only):
+def load_datasets():
     fnames = eor_limits.get_available_datasets()
-    if lowest_only:
-        return [eor_limits.load_dataset_lowest_limits(fname) for fname in fnames]
-    else:
-        return [eor_limits.load_dataset(fname) for fname in fnames]
+    list_datasets = []
+    for fname in fnames:
+        draw = eor_limits.load_dataset(fname)
+        dlowest = eor_limits.load_dataset_lowest_limits(fname)
+        list_datasets.append({
+            'fname': f"{draw.author}{draw.year}" if 'HERA' not in draw.author else f'HERA{draw.year}',
+            'telescope': draw.telescope,
+            'year': draw.year,
+            'doi': draw.doi,
+            'dataset_raw': draw,
+            'dataset_lowest': dlowest,
+            'checkbox': None
+        })
+    df_datasets = pd.DataFrame(list_datasets)
+    return df_datasets
 
 def main():
     
@@ -34,36 +45,50 @@ def main():
     """
     )
     
-    # Load datasets
-    dataset_raw = load_datasets(lowest_only=False)
-    dataset_lowest = load_datasets(lowest_only=True)
-    
-    # Create a pandas DataFrame with 1) telescope, 2) author, 3) year, 4) dataset
-    df_data = []
-    for draw, dlowest in zip(dataset_raw, dataset_lowest):
-        df_data.append({
-            'fname': f"{draw.author}{draw.year}" if 'HERA' not in draw.author else f'HERA{draw.year}',
-            'telescope': draw.telescope,
-            'year': draw.year,
-            'doi': draw.doi,
-            'dataset_raw': draw,
-            'dataset_lowest': dlowest,
-            'checkbox': None, # Placeholder for checkbox state (to be filled later)
-        })
-    # Order by telescope then year
-    df_datasets = pd.DataFrame(df_data).sort_values(by=['telescope', 'year'])
-        
     # Sidebar for dataset selection
     with st.sidebar:
+        
+        # Load existing datasets
+        if 'df_datasets' not in st.session_state:
+            df_datasets = load_datasets()
+        
+        # Upload own dataset
+        uploaded_datasets = st.file_uploader("Upload your own dataset (YAML format)", type=['yaml'], accept_multiple_files=True)
+        for uploaded_dataset in uploaded_datasets:
+            upload_data = uploaded_dataset.getvalue().decode('utf-8')
+            try:
+                user_dataset = eor_limits.load_dataset(upload_data, if_yaml_str=True)
+                user_dataset_lowest = eor_limits.load_dataset_lowest_limits(upload_data, if_yaml_str=True)
+                st.success(f"Successfully loaded dataset: {user_dataset.author}{user_dataset.year}")
+                df_datasets = pd.concat([
+                    df_datasets,
+                    pd.DataFrame([{
+                        'fname': f"{user_dataset.author}{user_dataset.year}" if 'HERA' not in user_dataset.author else f'HERA{user_dataset.year}',
+                        'telescope': user_dataset.telescope,
+                        'year': user_dataset.year,
+                        'doi': user_dataset.doi,
+                        'dataset_raw': user_dataset,
+                        'dataset_lowest': user_dataset_lowest,
+                        'checkbox': None
+                    }])
+                ])
+            except Exception as e:
+                print(e)
+                st.error(f"Failed to load dataset: {e}")
+                
+        # Sort datasets by telescope and year
+        df_datasets = df_datasets.sort_values(by=['telescope', 'year']).reset_index(drop=True)
+
+        # Dataset selection checkboxes
         select_all = st.checkbox("Select/Deselect all")
-        for telescope in df_datasets['telescope'].unique():
-            st.markdown(f"*{telescope}*")
-            for idx, row in df_datasets[df_datasets['telescope'] == telescope].iterrows():
-                with st.container(horizontal=True, gap="xsmall"):
-                    df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=select_all)
-                    if row['doi']: # Add DOI link if available
-                        st.markdown(f"<a href='https://doi.org/{row['doi']}' target='_blank' style='text-decoration: none;'>🔗</a>", 
-                                    unsafe_allow_html=True)
+        for idx, row in df_datasets.iterrows():
+            if idx == 1 or df_datasets.iloc[idx]['telescope'] != df_datasets.iloc[idx-1]['telescope']:
+                st.markdown(f"*{df_datasets.iloc[idx]['telescope']}*")
+            with st.container(horizontal=True, gap="xsmall"):
+                df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=select_all)
+                if row['doi']: # Add DOI link if available
+                    st.markdown(f"<a href='https://doi.org/{row['doi']}' target='_blank' style='text-decoration: none;'>🔗</a>", 
+                                unsafe_allow_html=True)
     
     # Two columns: left for options, right for plot
     columns = st.columns([1,3])

@@ -32,6 +32,12 @@ def process_data(d: dict) -> dict:
             return [to_eval(x) for x in arr]
         else:
             return eval_item(arr)
+        
+    # Mandatory fields
+    mandatory_fields = ['delta_squared', 'z', 'k']
+    for field in mandatory_fields:
+        if field not in d:
+            raise ValueError(f"Mandatory field '{field}' is missing in data.")
     
     # Process each attribute
     for attr_name in ['z', 'z_lower', 'z_upper', 'k', 'k_lower', 'k_upper', 'delta_squared', 'z_tags']:
@@ -136,16 +142,19 @@ def get_available_datasets() -> list[str]:
     files = [os.path.basename(f)[:-5] for f in os.listdir('data') if f.endswith('.yaml')]
     return files
 
-def load_dataset(fname: str) -> DataSet:
+def load_dataset(fname: str, if_yaml_str: bool=False) -> DataSet:
 
-    fname = fname[:-5] if fname.endswith('.yaml') else fname
-    if fname in get_available_datasets():
-        pass
+    if if_yaml_str:
+        yaml_data = yaml.safe_load(fname)
     else:
-        raise ValueError(f"Dataset '{fname}' not found. Available datasets: {get_available_datasets()}")
-    with open('data/' + fname + '.yaml', 'r') as file:
-        yaml_data = yaml.safe_load(file)
-        
+        fname = fname[:-5] if fname.endswith('.yaml') else fname
+        if fname in get_available_datasets():
+            pass
+        else:
+            raise ValueError(f"Dataset '{fname}' not found. Available datasets: {get_available_datasets()}")
+        with open('data/' + fname + '.yaml', 'r') as file:
+            yaml_data = yaml.safe_load(file)
+            
     # Process and validate data
     data_dict = yaml_data.get('data', {})
     process_data(data_dict)
@@ -161,9 +170,9 @@ def load_dataset(fname: str) -> DataSet:
         )
     
 # WARNING: This might be over-estimating the lowest limit, if the lowest k-bin is erroneously low.
-def load_dataset_lowest_limits(fname: str) -> DataSet:
+def load_dataset_lowest_limits(fname: str, if_yaml_str: bool=False) -> DataSet:
 
-    dataset = load_dataset(fname)
+    dataset = load_dataset(fname, if_yaml_str=if_yaml_str)
     
     # For all unique z values, find the lowest limit
     z_L, z_lower_L, z_upper_L, z_tags_L, k_L, k_lower_L, k_upper_L, dsq_L = [], [], [], [], [], [], [], []
