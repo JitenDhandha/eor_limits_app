@@ -19,7 +19,6 @@ This is a an interactive tool to visualize published 21-cm power spectrum limits
 
 ## Bugs and Feature Requests
 
-If you encounter any bugs or have feature requests, please open an issue on this repository.
-Alternatively, you can reach out via email to the me at `jitendhandha [at] gmail [dot] com`.
+If you encounter any bugs or have feature requests, please open an issue on this repository. Alternatively, you can reach out to me via email at `jitendhandha [at] gmail [dot] com`.
 
 
