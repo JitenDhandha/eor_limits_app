@@ -53,7 +53,7 @@ def main():
             df_datasets = load_datasets()
         
         # Upload own dataset
-        uploaded_datasets = st.file_uploader("Upload your own dataset (YAML format)", type=['yaml'], 
+        uploaded_datasets = st.file_uploader("**:blue[Upload your own dataset]**", type=['yaml'], 
                                              help="""
                                              Uploaded datasets are stored in-memory on the server for processing during your session. 
                                              They are not saved anywhere permanently, and not accessible to any other app users. 
