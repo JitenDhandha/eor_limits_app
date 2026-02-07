@@ -86,12 +86,19 @@ def main():
         df_datasets = df_datasets.sort_values(by=['telescope', 'year']).reset_index(drop=True)
 
         # Dataset selection checkboxes
-        select_all = st.checkbox("Select/Deselect all")
+        with st.container(horizontal=True, gap="xsmall"):
+            st.markdown("**:blue[Select/Deselect all]**")
+            select_all = st.checkbox("", value=False, key="select_all")
+        select_all_telescope = {}
         for idx, row in df_datasets.iterrows():
             if idx == 1 or df_datasets.iloc[idx]['telescope'] != df_datasets.iloc[idx-1]['telescope']:
-                st.markdown(f"*{df_datasets.iloc[idx]['telescope']}*")
+                with st.container(horizontal=True, gap="xsmall"):
+                    telescope_name = df_datasets.iloc[idx]['telescope']
+                    st.markdown(f"***:blue[{telescope_name}]***")
+                    select_all_telescope[telescope_name] = st.checkbox(f"", value=False, key=f"select_all_{telescope_name}")
             with st.container(horizontal=True, gap="xsmall"):
-                df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], value=select_all)
+                df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], 
+                                                value=select_all or select_all_telescope[row['telescope']])
                 if row['doi']: # Add DOI link if available
                     st.markdown(f"<a href='https://doi.org/{row['doi']}' target='_blank' style='text-decoration: none;'>🔗</a>", 
                                 unsafe_allow_html=True)
