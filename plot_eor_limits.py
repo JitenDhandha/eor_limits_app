@@ -17,6 +17,7 @@ def plot(datasets,
         x_axis = 'k', 
         x_axis_log = False,
         x_axis_errors = True,
+        y_axis = 'delta_sq',
         z_range = None,
         k_range = None,
         year_range = None,
@@ -58,7 +59,10 @@ def plot(datasets,
         for iz in range(len(data.z)):
             
             # Get data for this redshift
-            y = y_arr[iz]
+            if y_axis == 'delta_sq':
+                y = y_arr[iz]
+            elif y_axis == 'power':
+                y = y_arr[iz] * ((2*np.pi**2)/(data.k[iz]**3))
             z_vals = float(data.z[iz]) * np.ones_like(y)
             z_lower_vals = data.z_lower[iz] * np.ones_like(y) if data.z_lower.size > 0 else None
             z_upper_vals = data.z_upper[iz] * np.ones_like(y) if data.z_upper.size > 0 else None
@@ -135,7 +139,7 @@ def plot(datasets,
         ),
         yaxis = dict(
             type='log', exponentformat='e',
-            title='Δ² [mK²]',
+            title='Δ² [mK²]' if y_axis == 'delta_sq' else 'P(k) [mK²/(h/Mpc)³]',
         ),
         legend=dict(
             font=dict(size=10),

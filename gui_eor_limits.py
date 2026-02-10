@@ -122,6 +122,11 @@ def main():
         )
         x_axis_errors = st.toggle("Show $x$ axis error bars", value=False)
         x_axis_log = st.toggle("Logarithmic $x$ axis", value=(x_axis=='k'))
+        y_axis = st.radio(
+            "$y$ axis:", 
+            options=['delta_sq', 'power'],
+            format_func=lambda x: 'Dimensionless $\Delta^2(k)$' if x=='delta_sq' else 'Power $P(k)$',
+        )
         lowest_only = st.toggle("Show only lowest limits per $z$-bin", value=False)
         z_range = st.slider("$z$ range", min_value=5.0, max_value=30.0, value=(5.0,30.0), step=0.1)
         log_k_range = st.slider("$\log(k)$ range", min_value=-3.0, max_value=2.0, value=(-3.0,2.0), step=0.1)
@@ -147,6 +152,7 @@ def main():
             x_axis=x_axis,
             x_axis_log=x_axis_log,
             x_axis_errors=x_axis_errors,
+            y_axis=y_axis,
             z_range=z_range,
             k_range=(10**log_k_range[0], 10**log_k_range[1]),
             year_range=year_range,
