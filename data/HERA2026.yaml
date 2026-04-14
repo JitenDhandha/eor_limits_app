@@ -1,7 +1,7 @@
 telescope: HERA
-author: HERA collaboration
-year: 2025
-doi: arXiv.2511.21289
+author: HERA
+year: 2026
+doi: 2026ApJ...998...33A
 
 data:
     delta_squared:
@@ -25,6 +25,6 @@ data:
     k_lower:
     k_upper:
     z: [24.37, 19.80, 16.78, 10.76, 9.87, 7.63, 7.05, 5.56]
-    z_lower: 
-    z_upper: 
+    z_lower:
+    z_upper:
     z_tags:

@@ -30,7 +30,7 @@ def main():
                        layout='wide')
     
     # Title and description
-    st.markdown(f"<div style='text-align: right; font-size: 12px;'>Last updated: 07 February, 2026</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='text-align: right; font-size: 12px;'>Last updated: 14 April, 2026</div>", unsafe_allow_html=True)
     st.title("📡 21-cm Power Spectrum Limits Plotter")
     st.markdown(
     """
