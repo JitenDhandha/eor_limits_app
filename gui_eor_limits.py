@@ -187,8 +187,8 @@ def main():
     # Custom plot kwargs (needed first for plot_kwargs_dict to be defined)
     with st.expander("Customize plot appearance"):
         st.markdown("Provide a Python dictionary to customize the appearance of each dataset. \
-                    The keys should be the dataset identifiers (e.g. `'HERA2025'`), and the values should be dictionaries containing Plotly marker/line properties. \
-                    e.g. `{'HERA2025': {'marker': {'symbol': 'star', 'size': 4}, 'line': {'shape': 'hvh'}, 'color': 'green'}}`")
+                    The keys should be the dataset identifiers (e.g. `'HERA2026'`), and the values should be dictionaries containing Plotly marker/line properties. \
+                    e.g. `{'HERA2026': {'marker': {'symbol': 'star', 'size': 4}, 'line': {'shape': 'hvh'}, 'color': 'green'}}`")
         plot_kwargs_code = st.text_area("plot_kwargs_dict:", "{}")
         try:
             plot_kwargs_dict = eval(plot_kwargs_code, {"__builtins__": {}})
@@ -198,7 +198,7 @@ def main():
     
     # Plot area
     with cont_plot:
-        st.markdown('<div class="app-section-title">Main plot</div>', unsafe_allow_html=True)
+        st.markdown('<div class="app-section-title">Plot area</div>', unsafe_allow_html=True)
         fig = plot_eor_limits.plot(
             [row['dataset_lowest' if lowest_only else 'dataset_raw'] for idx, row in df_datasets.iterrows() if row['checkbox']],
             plot_type=plot_type,
