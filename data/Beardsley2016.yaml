@@ -1,6 +1,6 @@
 telescope: MWA
 author: Beardsley
-year: 2019
+year: 2016
 doi: 10.3847/1538-4357/833/1/102
 notes:
     - The k_lower and k_upper values are not in the paper, they came via private communication from N. Barry, who got the files from A. Beardsley (see data files for the k edges).
