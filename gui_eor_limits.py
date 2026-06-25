@@ -1,7 +1,55 @@
+import tomllib
 import streamlit as st
 import pandas as pd
 import plot_eor_limits
 import eor_limits
+
+# Load from .streamlit/config.toml
+with open(".streamlit/config.toml", "rb") as f:
+    config = tomllib.load(f)['theme']
+    primaryColor = config.get("primaryColor")
+    textColor = config.get("textColor")
+    backgroundColor = config.get("backgroundColor")
+    secondaryBackgroundColor = config.get("secondaryBackgroundColor")
+
+def _apply_css():
+
+    def _color_to_rgba(color, alpha):
+        """Convert a hex color to an rgba string with the given alpha value."""
+        color = color.lstrip('#')
+        r, g, b = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+        return f'rgba({r}, {g}, {b}, {alpha})'
+
+    st.markdown(
+        f'''
+        <style>
+        .block-container {{
+            padding-top: 2.5rem;
+            padding-bottom: 1.5rem;
+            max-width: 1480px;
+        }}
+        .app-section-title {{
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.1rem 0 0.65rem 0;
+            color: {primaryColor};
+        }}
+        .app-telescope-heading {{
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: {primaryColor};
+            opacity: 0.75;
+        }}
+        section[data-testid="stSidebar"] {{
+            background:
+                radial-gradient(circle at top left, {_color_to_rgba(primaryColor,0.15)}, transparent 60%),
+                linear-gradient(180deg, {backgroundColor} 0%, {backgroundColor} 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }}
+        </style>
+        ''',
+        unsafe_allow_html=True,
+    )
 
 @st.cache_data
 def load_datasets():
@@ -23,26 +71,27 @@ def load_datasets():
     return df_datasets
 
 def main():
-    
+
     # Page configuration
-    st.set_page_config(page_title="21-cm Power Spectrum Limits Plotter", 
+    st.set_page_config(page_title="21-cm Power Spectrum Limits Plotter",
                        page_icon="📡",
                        layout='wide')
+
+    _apply_css()
     
-    # Title and description
-    st.markdown(f"<div style='text-align: right; font-size: 12px;'>Last updated: 14 April, 2026</div>", unsafe_allow_html=True)
-    st.title("📡 21-cm Power Spectrum Limits Plotter")
     st.markdown(
-    """
-    _An interactive tool to visualize published 21-cm power spectrum limits from interferometric experiments_ 
-    """)
-    #
-    st.info(
-    """
-    - **How to use**: Select datasets from the sidebar, collapsible on the top left corner of the page, and customize from various plotting options!
-    - **Pro tips**: Hover over the data points to see more information. Click on legend items to toggle visibility. Double-click to isolate.
-    - **Note**: Limits are grouped by redshift. Datasets containing multiple fields or polarizations at the same redshift are treated as separate entries.
-    """
+        f'''
+        <div style="padding: 0.15rem 0 0.5rem 0;">
+            <div style="font-size: 3rem; font-weight: 800; line-height: 1.05; color:{primaryColor}">📡 21-cm Power Spectrum Limits Plotter</div>
+            <div style="font-size: 0.95rem; opacity: 0.75; margin-top: 0.35rem"> by Jiten Dhandha, last updated 25 June 2026</div>
+            <div style="margin-top: 0.75rem; margin-bottom: 1rem; line-height: 1.55;">
+                An interactive tool to visualize published 21-cm power spectrum upper limits from interferometric experiments.
+                Select datasets from the sidebar and customize the plot using the options below. Hover over the data points
+                for more info, click on legend items to toggle visibility, and double-click to isolate a dataset.
+            </div>
+        </div>
+        ''',
+        unsafe_allow_html=True,
     )
     
     # Sidebar for dataset selection
@@ -53,7 +102,8 @@ def main():
             df_datasets = load_datasets()
         
         # Upload own dataset
-        uploaded_datasets = st.file_uploader("**:blue[Upload your own dataset]**", type=['yaml'], 
+        st.markdown('<div class="app-section-title">Upload your own data</div>', unsafe_allow_html=True)
+        uploaded_datasets = st.file_uploader("For data protection, hover over info icon", type=['yaml'], 
                                              help="""
                                              Uploaded datasets are stored in-memory on the server for processing during your session. 
                                              They are not saved anywhere permanently, and not accessible to any other app users. 
@@ -86,15 +136,16 @@ def main():
         df_datasets = df_datasets.sort_values(by=['telescope', 'year']).reset_index(drop=True)
 
         # Dataset selection checkboxes
+        st.markdown('<div class="app-section-title">Select datasets</div>', unsafe_allow_html=True)
         with st.container(horizontal=True, gap="xsmall"):
-            st.markdown("**:blue[Select/Deselect all]**")
+            st.markdown("Select/Deselect all")
             select_all = st.checkbox("", value=False, key="select_all")
         select_all_telescope = {}
         for idx, row in df_datasets.iterrows():
             if idx == 1 or df_datasets.iloc[idx]['telescope'] != df_datasets.iloc[idx-1]['telescope']:
                 with st.container(horizontal=True, gap="xsmall"):
                     telescope_name = df_datasets.iloc[idx]['telescope']
-                    st.markdown(f"***:blue[{telescope_name}]***")
+                    st.markdown(f'<div class="app-telescope-heading">{telescope_name}</div>', unsafe_allow_html=True)
                     select_all_telescope[telescope_name] = st.checkbox(f"", value=False, key=f"select_all_{telescope_name}")
             with st.container(horizontal=True, gap="xsmall"):
                 df_datasets.at[idx, 'checkbox'] = st.checkbox(row['fname'], 
@@ -110,6 +161,7 @@ def main():
     
     # Options area
     with bottom_left_cell:
+        st.markdown('<div class="app-section-title">Plotting options</div>', unsafe_allow_html=True)
         plot_type = st.radio(
             "Plot type:", 
             options=['line', 'scatter'],
@@ -146,6 +198,7 @@ def main():
     
     # Plot area
     with cont_plot:
+        st.markdown('<div class="app-section-title">Main plot</div>', unsafe_allow_html=True)
         fig = plot_eor_limits.plot(
             [row['dataset_lowest' if lowest_only else 'dataset_raw'] for idx, row in df_datasets.iterrows() if row['checkbox']],
             plot_type=plot_type,
@@ -164,7 +217,7 @@ def main():
     with st.expander("Show raw data of selected datasets"):
         for idx, row in df_datasets.iterrows():
             if row['checkbox']:
-                st.markdown(f"**{row['fname']}**")
+                st.markdown(f'<div class="app-telescope-heading">{row["fname"]}</div>', unsafe_allow_html=True)
                 st.dataframe(row['dataset_lowest' if lowest_only else 'dataset_raw'].data)
             
         

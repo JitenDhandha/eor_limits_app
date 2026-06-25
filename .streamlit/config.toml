@@ -3,12 +3,12 @@ base = "dark"
 baseFontSize = 16
 
 # General color setup
-textColor = "#e2e8f0"
-primaryColor = "#6690da"
-backgroundColor = "#1d293d"
-secondaryBackgroundColor = "#0f172b"
-codeTextColor = "#6690da"
+textColor = "#e2e8f0" # This is the text color of the app
+primaryColor = "#9CB080" # This is the primary color of elements (radio, checkbox, slider, etc.)
+backgroundColor = "#141a1d" # This is the background color of the app
+secondaryBackgroundColor = "#000000" # This is the background color of elements (browse, checkbox, fields, etc.)
+codeTextColor = "#9CB080" # This is the text color of code blocks
 
 # Widgets
 showWidgetBorder = true
-borderColor = "#ffffff"
+borderColor = "#777777"
